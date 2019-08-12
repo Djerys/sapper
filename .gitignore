@@ -1,5 +1,11 @@
 # Project exclude paths
 /out/
 
+*.jar
+*.war
+*.ear
+
 *.iml
 .idea
+
+*.class
