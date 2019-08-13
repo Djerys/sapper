@@ -4,7 +4,7 @@ package game_logic;
 import javax.swing.Timer;
 
 public final class Game {
-    public GameField field;
+    public GameField field = new GameField(GameDifficulty.INTERMEDIATE);
 
     private Timer timer;
     private GameDifficulty difficulty;
@@ -12,6 +12,10 @@ public final class Game {
     private final GameState state = GameState.READY;
 
     public Game() {
+        // code...
+    }
+
+    public void initialize() {
         // code...
     }
 }
