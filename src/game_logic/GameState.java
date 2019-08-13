@@ -1,4 +1,8 @@
 package game_logic;
 
-public class GameState {
+enum GameState {
+    READY,
+    GOING,
+    WIN,
+    LOSS,
 }

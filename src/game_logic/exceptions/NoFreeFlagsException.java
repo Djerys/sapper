@@ -1,6 +1,6 @@
 package game_logic.exceptions;
 
-public class NoFreeFlagsException extends FlagsException {
+public class NoFreeFlagsException extends FlagException {
     public NoFreeFlagsException() {
         super();
     }

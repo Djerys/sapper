@@ -1,17 +1,17 @@
 package game_logic;
 
-public class Game implements Runnable {
-    private final GameField field;
-    private final GameDifficulty difficulty;
+// Maybe this timer
+import javax.swing.Timer;
 
-    public Game(GameDifficulty difficulty) {
-        this.difficulty = difficulty;
-        this.field = new GameField(difficulty);
-//        this.player = new Player();
-    }
+public final class Game {
+    public GameField field;
 
-    @Override
-    public void run() {
+    private Timer timer;
+    private GameDifficulty difficulty;
 
+    private final GameState state = GameState.READY;
+
+    public Game() {
+        // code...
     }
 }

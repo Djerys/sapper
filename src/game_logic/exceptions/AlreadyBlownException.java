@@ -2,6 +2,7 @@ package game_logic.exceptions;
 
 public class AlreadyBlownException extends GameException {
     public AlreadyBlownException() {
+        super();
     }
 
     public AlreadyBlownException(String message) {

@@ -1,7 +1,8 @@
 package game_logic.exceptions;
 
-public class NoFlagOnCellException extends FlagsException {
+public class NoFlagOnCellException extends FlagException {
     public NoFlagOnCellException() {
+        super();
     }
 
     public NoFlagOnCellException(String message) {

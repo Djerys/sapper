@@ -1,22 +1,20 @@
 package game_logic;
 
-
 import game_logic.exceptions.AlreadyBlownException;
-import game_logic.exceptions.CannotPutFlagException;
+import game_logic.exceptions.AlreadyOpenCellException;
 import game_logic.exceptions.NoFlagOnCellException;
 import game_logic.exceptions.NoFreeFlagsException;
 
 import java.util.Objects;
 
-
 public final class GameField {
+    private boolean blown = false;
+    private int usedFlagsNumber = 0;
+    private Cell[][] space;
+
     private final int verticalSize;
     private final int horizontalSize;
     private final int minesNumber;
-
-    private boolean blown;
-    private int usedFlagsNumber = 0;
-    private Cell[][] space;
 
     private static class Cell {
         boolean isOpen = false;
@@ -31,9 +29,13 @@ public final class GameField {
         initializeSpace();
     }
 
-    public void initialize() {
+    public int getUsedFlagsNumber() {
+        return usedFlagsNumber;
     }
 
+    // TODO: randomize mine places
+    public void initialize() {
+    }
 
     /**
      * Opens all cells in field space.
@@ -47,26 +49,20 @@ public final class GameField {
     }
 
     /**
-     * Checks if mine was opened.
-     *
-     * @return true if mine was opened, else false
-     */
-    public boolean isBlown() {
-        return blown;
-    }
-
-    /**
      * Opens cell located on given coordinates.
      *
-     * @param vertical vertical coordinate for field space
+     * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @throws AlreadyBlownException if mine already detected
+     * @throws AlreadyBlownException    if mine is already detected
+     * @throws AlreadyOpenCellException if cell is already open
      */
-    public void openCell(int vertical, int horizontal) throws AlreadyBlownException {
+    public void openCell(int vertical, int horizontal)
+            throws AlreadyBlownException, AlreadyOpenCellException {
         if (blown) {
-            throw new AlreadyBlownException("Mine ");
+            throw new AlreadyBlownException();
         }
         checkSpaceIndexes(vertical, horizontal);
+        requireNonOpenCell(vertical, horizontal).isOpen = true;
         space[vertical][horizontal].isOpen = true;
         if (space[vertical][horizontal].hasMine) {
             blown = true;
@@ -76,42 +72,50 @@ public final class GameField {
     /**
      * Puts flag on cell located on given coordinates.
      *
-     * @param vertical vertical coordinate for field space
+     * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @throws NoFreeFlagsException if all flags already used
-     * @throws CannotPutFlagException if cell already opened
+     * @throws NoFreeFlagsException     if all flags already used
+     * @throws AlreadyOpenCellException if cell is already open
      */
-    public void putFlag(int vertical, int horizontal) throws NoFreeFlagsException, CannotPutFlagException {
+    public void putFlag(int vertical, int horizontal)
+            throws NoFreeFlagsException, AlreadyOpenCellException {
         if (usedFlagsNumber == minesNumber) {
             throw new NoFreeFlagsException();
         }
         checkSpaceIndexes(vertical, horizontal);
-        if (space[vertical][horizontal].isOpen) {
-            throw new CannotPutFlagException();
-        }
-        space[vertical][horizontal].hasFlag = true;
+        requireNonOpenCell(vertical, horizontal).hasFlag = true;
         usedFlagsNumber++;
     }
 
     /**
      * Removes flag from cell located on given coordinates.
      *
-     * @param vertical vertical coordinate for field space
+     * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @throws NoFlagOnCellException if cell doesn't have a flag
+     * @throws NoFlagOnCellException    if cell doesn't have a flag
+     * @throws AlreadyOpenCellException if cell is already open
      */
-    public void removeFlag(int vertical, int horizontal) throws NoFlagOnCellException {
+    public void removeFlag(int vertical, int horizontal)
+            throws NoFlagOnCellException, AlreadyOpenCellException {
         checkSpaceIndexes(vertical, horizontal);
         if (!space[vertical][horizontal].hasFlag) {
             throw new NoFlagOnCellException();
         }
-        space[vertical][horizontal].hasFlag = false;
+        requireNonOpenCell(vertical, horizontal).hasFlag = false;
         usedFlagsNumber--;
     }
 
     private void checkSpaceIndexes(int vertical, int horizontal) {
         Objects.checkIndex(vertical, space.length);
         Objects.checkIndex(horizontal, space[vertical].length);
+    }
+
+    private Cell requireNonOpenCell(int vertical, int horizontal)
+            throws AlreadyOpenCellException {
+        if (!space[vertical][horizontal].isOpen) {
+            throw new AlreadyOpenCellException();
+        }
+        return space[vertical][horizontal];
     }
 
     private void initializeSpace() {
