@@ -1,6 +1,6 @@
 package game_logic;
 
-enum GameState {
+public enum GameState {
     READY,
     GOING,
     WIN,

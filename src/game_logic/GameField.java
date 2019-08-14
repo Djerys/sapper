@@ -1,5 +1,6 @@
 package game_logic;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 public final class GameField {
@@ -33,13 +34,14 @@ public final class GameField {
     }
 
     // TODO: randomize mine places
-    public void initialize() {
+    public void setupMines() {
+        // code...
     }
 
     /**
      * Opens all cells in field space.
      */
-    public void openAllCells() {
+    public void revealAllCells() {
         for (int i = 0; i < verticalSize; i++) {
             for (int j = 0; j < horizontalSize; j++) {
                 space[i][j].isOpen = true;
@@ -54,13 +56,14 @@ public final class GameField {
      * @param horizontal horizontal coordinate for field space
      * @return true if cell was open else false
      */
-    public boolean openCell(int vertical, int horizontal) {
-        if (blown) {
+    public boolean revealCell(int vertical, int horizontal) {
+        checkSpaceIndexes(vertical, horizontal);
+        var cell = space[vertical][horizontal];
+        if (cell.isOpen || cell.hasFlag) {
             return false;
         }
-        checkSpaceIndexes(vertical, horizontal);
-        space[vertical][horizontal].isOpen = true;
-        if (space[vertical][horizontal].hasMine) {
+        cell.isOpen = true;
+        if (cell.hasMine) {
             blown = true;
         }
         return true;
@@ -74,11 +77,12 @@ public final class GameField {
      * @return true if cell was marked else false
      */
     public boolean putFlag(int vertical, int horizontal) {
-        if (usedFlagsNumber == minesNumber) {
+        checkSpaceIndexes(vertical, horizontal);
+        var cell = space[vertical][horizontal];
+        if (cell.isOpen || usedFlagsNumber == minesNumber) {
             return false;
         }
-        checkSpaceIndexes(vertical, horizontal);
-        space[vertical][horizontal].hasFlag = true;
+        cell.hasFlag = true;
         usedFlagsNumber++;
         return true;
     }
@@ -92,10 +96,11 @@ public final class GameField {
      */
     public boolean removeFlag(int vertical, int horizontal) {
         checkSpaceIndexes(vertical, horizontal);
-        if (!space[vertical][horizontal].hasFlag) {
+        var cell = space[vertical][horizontal];
+        if (cell.isOpen || !cell.hasFlag) {
             return false;
         }
-        space[vertical][horizontal].hasFlag = false;
+        cell.hasFlag = false;
         usedFlagsNumber--;
         return true;
     }

@@ -10,6 +10,5 @@ public class NewGameAction extends Action {
 
     @Override
     public void process() {
-        client.game.field.initialize();
     }
 }

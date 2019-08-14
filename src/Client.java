@@ -4,6 +4,6 @@ import game_logic.GameDifficulty;
 public class Client {
     public static void main(String[] args) {
         var field = new GameField(GameDifficulty.BEGINNER);
-        field.initialize();
+        field.setupMines();
     }
 }

@@ -1,12 +1,13 @@
 package actions.base;
 
+import game_logic.Game;
 import ui.GameClient;
 
 public abstract class Action {
-    protected final GameClient client;
+    protected final Game game;
 
     public Action(GameClient client) {
-        this.client = client;
+        this.game = client.game;
     }
 
     public abstract void process();
