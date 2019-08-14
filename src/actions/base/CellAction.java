@@ -1,13 +1,14 @@
-package game_logic.actions;
+package actions.base;
 
-import game_logic.Game;
+import actions.base.Action;
+import ui.GameClient;
 
 public abstract class CellAction extends Action {
     protected final int vertical;
     protected final int horizontal;
 
-    public CellAction(Game game, int vertical, int horizontal) {
-        super(game);
+    public CellAction(GameClient client, int vertical, int horizontal) {
+        super(client);
         this.vertical = vertical;
         this.horizontal = horizontal;
     }

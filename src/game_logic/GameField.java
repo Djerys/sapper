@@ -1,10 +1,5 @@
 package game_logic;
 
-import game_logic.exceptions.AlreadyBlownException;
-import game_logic.exceptions.AlreadyOpenCellException;
-import game_logic.exceptions.NoFlagOnCellException;
-import game_logic.exceptions.NoFreeFlagsException;
-
 import java.util.Objects;
 
 public final class GameField {
@@ -27,6 +22,10 @@ public final class GameField {
         this.horizontalSize = difficulty.getHorizontalSize();
         this.minesNumber = difficulty.getMinesNumber();
         initializeSpace();
+    }
+
+    public boolean isBlown() {
+        return blown;
     }
 
     public int getUsedFlagsNumber() {
@@ -53,20 +52,18 @@ public final class GameField {
      *
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @throws AlreadyBlownException    if mine is already detected
-     * @throws AlreadyOpenCellException if cell is already open
+     * @return true if cell was open else false
      */
-    public void openCell(int vertical, int horizontal)
-            throws AlreadyBlownException, AlreadyOpenCellException {
+    public boolean openCell(int vertical, int horizontal) {
         if (blown) {
-            throw new AlreadyBlownException();
+            return false;
         }
         checkSpaceIndexes(vertical, horizontal);
-        requireNonOpenCell(vertical, horizontal).isOpen = true;
         space[vertical][horizontal].isOpen = true;
         if (space[vertical][horizontal].hasMine) {
             blown = true;
         }
+        return true;
     }
 
     /**
@@ -74,17 +71,16 @@ public final class GameField {
      *
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @throws NoFreeFlagsException     if all flags already used
-     * @throws AlreadyOpenCellException if cell is already open
+     * @return true if cell was marked else false
      */
-    public void putFlag(int vertical, int horizontal)
-            throws NoFreeFlagsException, AlreadyOpenCellException {
+    public boolean putFlag(int vertical, int horizontal) {
         if (usedFlagsNumber == minesNumber) {
-            throw new NoFreeFlagsException();
+            return false;
         }
         checkSpaceIndexes(vertical, horizontal);
-        requireNonOpenCell(vertical, horizontal).hasFlag = true;
+        space[vertical][horizontal].hasFlag = true;
         usedFlagsNumber++;
+        return true;
     }
 
     /**
@@ -92,30 +88,21 @@ public final class GameField {
      *
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @throws NoFlagOnCellException    if cell doesn't have a flag
-     * @throws AlreadyOpenCellException if cell is already open
+     * @return true if flag was removed else false
      */
-    public void removeFlag(int vertical, int horizontal)
-            throws NoFlagOnCellException, AlreadyOpenCellException {
+    public boolean removeFlag(int vertical, int horizontal) {
         checkSpaceIndexes(vertical, horizontal);
         if (!space[vertical][horizontal].hasFlag) {
-            throw new NoFlagOnCellException();
+            return false;
         }
-        requireNonOpenCell(vertical, horizontal).hasFlag = false;
+        space[vertical][horizontal].hasFlag = false;
         usedFlagsNumber--;
+        return true;
     }
 
     private void checkSpaceIndexes(int vertical, int horizontal) {
         Objects.checkIndex(vertical, space.length);
         Objects.checkIndex(horizontal, space[vertical].length);
-    }
-
-    private Cell requireNonOpenCell(int vertical, int horizontal)
-            throws AlreadyOpenCellException {
-        if (!space[vertical][horizontal].isOpen) {
-            throw new AlreadyOpenCellException();
-        }
-        return space[vertical][horizontal];
     }
 
     private void initializeSpace() {

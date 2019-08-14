@@ -4,18 +4,29 @@ package game_logic;
 import javax.swing.Timer;
 
 public final class Game {
-    public GameField field = new GameField(GameDifficulty.INTERMEDIATE);
+    public GameField field;
 
-    private Timer timer;
     private GameDifficulty difficulty;
-
-    private final GameState state = GameState.READY;
+    private GameState state = GameState.READY;
 
     public Game() {
-        // code...
+        difficulty = GameDifficulty.INTERMEDIATE;
+        field = new GameField(difficulty);
     }
 
-    public void initialize() {
-        // code...
+    public Game(GameDifficulty difficulty) {
+        this.difficulty = difficulty;
+        field = new GameField(difficulty);
+    }
+
+    public void startNew() {
+        field.initialize();
+        state = GameState.GOING;
+    }
+
+    public void changeDifficulty(GameDifficulty difficulty) {
+        this.difficulty = difficulty;
+        field = new GameField(difficulty);
+        state = GameState.READY;
     }
 }
