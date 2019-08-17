@@ -32,7 +32,7 @@ public class RevealCellAction extends CellAction {
         if (game.getField().revealCell(vertical, horizontal)) {
             if (game.getField().isBlown()) {
                 game.setState(GameState.LOSS);
-//          } else if (game.getField().isClear()) {
+            } else if (game.getField().isClear()) {
                 game.setState(GameState.WIN);
             }
         }
