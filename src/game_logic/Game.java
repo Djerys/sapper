@@ -1,7 +1,6 @@
 package game_logic;
 
 // Maybe this timer
-import javax.swing.Timer;
 
 public final class Game {
     private GameState state = GameState.READY;
@@ -33,6 +32,11 @@ public final class Game {
     public void changeDifficulty(GameDifficulty difficulty) {
         this.difficulty = difficulty;
         field = new GameField(difficulty);
+        state = GameState.READY;
+    }
+
+    public void start() {
+        field.prepareToStart();
         state = GameState.READY;
     }
 }

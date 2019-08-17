@@ -10,5 +10,10 @@ public class ToggleFlagAction extends CellAction {
 
     @Override
     public void process() {
+        if (game.getField().putFlag(vertical, horizontal)) {
+            // UI handler gor putting...
+        } else if (game.getField().removeFlag(vertical, horizontal)) {
+            // UI handler for removing
+        }
     }
 }

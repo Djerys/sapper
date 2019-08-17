@@ -1,7 +1,7 @@
 package game_logic;
 
-import java.util.Arrays;
 import java.util.Objects;
+import java.util.Random;
 
 public final class GameField {
     private boolean blown = false;
@@ -22,7 +22,7 @@ public final class GameField {
         this.verticalSize = difficulty.getVerticalSize();
         this.horizontalSize = difficulty.getHorizontalSize();
         this.minesNumber = difficulty.getMinesNumber();
-        initializeSpace();
+        prepareToStart();
     }
 
     public boolean isBlown() {
@@ -35,11 +35,28 @@ public final class GameField {
 
     // TODO: randomize mine places
     public void setupMines() {
-        // code...
+        var random = new Random();
+        int i = 0;
+        while (i < minesNumber) {
+            int vertical = random.nextInt(verticalSize);
+            int horizontal = random.nextInt(horizontalSize);
+            if (!space[vertical][horizontal].hasMine) {
+                space[vertical][horizontal].hasMine = true;
+                i++;
+            }
+        }
+    }
+
+    public void prepareToStart() {
+        for (int i = 0; i < verticalSize; i++) {
+            for (int j = 0; j < horizontalSize; j++) {
+                space[i][j] = new Cell();
+            }
+        }
     }
 
     /**
-     * Opens all cells in field space.
+     * Reveals all cells in field space.
      */
     public void revealAllCells() {
         for (int i = 0; i < verticalSize; i++) {
@@ -50,7 +67,7 @@ public final class GameField {
     }
 
     /**
-     * Opens cell located on given coordinates.
+     * Reveals cell located on given coordinates.
      *
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
@@ -108,14 +125,5 @@ public final class GameField {
     private void checkSpaceIndexes(int vertical, int horizontal) {
         Objects.checkIndex(vertical, space.length);
         Objects.checkIndex(horizontal, space[vertical].length);
-    }
-
-    private void initializeSpace() {
-        space = new Cell[verticalSize][horizontalSize];
-        for (int i = 0; i < verticalSize; i++) {
-            for (int j = 0; j < horizontalSize; j++) {
-                space[i][j] = new Cell();
-            }
-        }
     }
 }
