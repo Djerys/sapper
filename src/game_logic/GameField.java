@@ -47,6 +47,16 @@ public final class GameField {
         openCleanCellsCount = spaceSize - minesNumber;
     }
 
+    public void revealNotFlaggedMines() {
+        for (int i = 0; i < verticalSize; i++) {
+            for (int j = 0; j < horizontalSize; j++) {
+                if (!space[i][j].hasFlag && space[i][j].hasMine) {
+                    space[i][j].isRevealed = true;
+                }
+            }
+        }
+    }
+
     /**
      * Reveals cell located on given coordinates.
      *

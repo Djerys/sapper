@@ -19,11 +19,9 @@ public class GameTest {
                 case "reveal":
                     game.revealCellOnField(vertical, horizontal);
                     break;
-
                 case "put":
                     game.putFlagOnField(vertical, horizontal);
                     break;
-
                 case "remove":
                     game.removeFlagFromField(vertical, horizontal);
             }
