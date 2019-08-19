@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class GameTest {
     public static void main(String[] args) {
-        var game = new Game(GameDifficulty.BEGINNER);
+        var game = new Game();
         var in = new Scanner(System.in);
         while (game.getState() != GameState.LOSS && game.getState() != GameState.WIN) {
             game.printField();
@@ -27,5 +27,7 @@ public class GameTest {
             }
             System.out.println();
         }
+        game.finish();
+        game.printField();
     }
 }

@@ -40,10 +40,24 @@ public final class Game {
         field.removeFlag(vertical, horizontal);
     }
 
+    public int getUnusedFlagsCount() {
+        return field.getUnusedFlagsCount();
+    }
+
     public void restart(GameDifficulty difficulty) {
         this.difficulty = difficulty;
         field = new GameField(difficulty);
         state = GameState.READY;
+    }
+
+    public void finish() {
+        switch (state) {
+            case WIN:
+                field.revealAllCells();
+                break;
+            case LOSS:
+                field.revealNotFlaggedMines();
+        }
     }
 
     public void printField() {

@@ -4,21 +4,23 @@ import java.util.Random;
 import java.util.Set;
 
 public final class GameField {
+    private int unusedFlagsCount;
     private boolean blown = false;
-    private int usedFlagsCount = 0;
+    private boolean clear = false;
     private int openCleanCellsCount = 0;
 
     private final Cell[][] space;
     private final int verticalSize;
     private final int horizontalSize;
     private final int spaceSize;
-    private final int minesNumber;
+    private final int minesCount;
 
     GameField(GameDifficulty difficulty) {
         this.verticalSize = difficulty.getVerticalSize();
         this.horizontalSize = difficulty.getHorizontalSize();
         this.spaceSize = verticalSize * horizontalSize;
-        this.minesNumber = difficulty.getMinesNumber();
+        this.minesCount = difficulty.getMinesNumber();
+        unusedFlagsCount = minesCount;
         space = new Cell[verticalSize][horizontalSize];
         initializeSpace();
     }
@@ -28,11 +30,12 @@ public final class GameField {
     }
 
     public boolean isClear() {
-        return !blown && openCleanCellsCount == spaceSize - minesNumber;
+        var isAllClearCellsOpen = openCleanCellsCount == spaceSize - minesCount;
+        return !blown && isAllClearCellsOpen;
     }
 
-    public int getUsedFlagsCount() {
-        return usedFlagsCount;
+    public int getUnusedFlagsCount() {
+        return unusedFlagsCount;
     }
 
     /**
@@ -44,7 +47,7 @@ public final class GameField {
                 space[i][j].isRevealed = true;
             }
         }
-        openCleanCellsCount = spaceSize - minesNumber;
+        openCleanCellsCount = spaceSize - minesCount;
     }
 
     public void revealNotFlaggedMines() {
@@ -88,11 +91,11 @@ public final class GameField {
      */
     public void putFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
-        if (cell.isRevealed || usedFlagsCount == minesNumber) {
+        if (cell.isRevealed || unusedFlagsCount == 0) {
             return;
         }
         cell.hasFlag = true;
-        usedFlagsCount++;
+        unusedFlagsCount--;
     }
 
     /**
@@ -108,7 +111,7 @@ public final class GameField {
             return;
         }
         cell.hasFlag = false;
-        usedFlagsCount--;
+        unusedFlagsCount++;
     }
 
     public void print() {
@@ -163,7 +166,7 @@ public final class GameField {
     private void randomMines(int nonMineVertical, int nonMineHorizontal) {
         var random = new Random();
         int i = 0;
-        while (i < minesNumber) {
+        while (i < minesCount) {
             int vertical = random.nextInt(verticalSize);
             int horizontal = random.nextInt(horizontalSize);
             var shouldHaveMine = !dimensionRange(nonMineVertical).contains(vertical)
@@ -182,12 +185,12 @@ public final class GameField {
     private void calculateNearMinesCount() {
         for (int i = 0; i < verticalSize; i++) {
             for (int j = 0; j < horizontalSize; j++) {
-                calculateNears(i, j);
+                calculateNearMinesAround(i, j);
             }
         }
     }
 
-    private void calculateNears(int vertical, int horizontal) {
+    private void calculateNearMinesAround(int vertical, int horizontal) {
         for (int vOffset = -1; vOffset <= 1; vOffset++) {
             for (int hOffset = -1; hOffset <= 1; hOffset++) {
                 if (!isOutOfBounds(vertical + vOffset, horizontal + hOffset)) {
