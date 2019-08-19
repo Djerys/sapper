@@ -128,6 +128,23 @@ public final class GameField {
         }
     }
 
+    private void revealAround(int vertical, int horizontal) {
+        if (isOutOfBounds(vertical, horizontal)) return;
+        var cell = space[vertical][horizontal];
+        if (cell.isRevealed) return;
+        if (cell.hasMine) return;
+        cell.isRevealed = true;
+        if (cell.nearMinesCount != 0) return;
+        revealAround(vertical - 1, horizontal - 1);
+        revealAround(vertical - 1, horizontal);
+        revealAround(vertical - 1, horizontal + 1);
+        revealAround(vertical, horizontal - 1);
+        revealAround(vertical, horizontal + 1);
+        revealAround(vertical + 1, horizontal - 1);
+        revealAround(vertical + 1, horizontal);
+        revealAround(vertical + 1, horizontal + 1);
+    }
+
     private void setupMines(int nonMineVertical, int nonMineHorizontal) {
         randomMines(nonMineVertical, nonMineHorizontal);
         calculateNearMinesCount();
@@ -174,22 +191,5 @@ public final class GameField {
     private boolean isOutOfBounds(int vertical, int horizontal) {
         return vertical < 0 || horizontal < 0
                 || vertical >= verticalSize || horizontal >= horizontalSize;
-    }
-
-    private void revealAround(int vertical, int horizontal) {
-        if (isOutOfBounds(vertical, horizontal)) return;
-        var cell = space[vertical][horizontal];
-        if (cell.isRevealed) return;
-        if (cell.hasMine) return;
-        cell.isRevealed = true;
-        if (cell.nearMinesCount != 0) return;
-        revealAround(vertical - 1, horizontal - 1);
-        revealAround(vertical - 1, horizontal);
-        revealAround(vertical - 1, horizontal + 1);
-        revealAround(vertical, horizontal - 1);
-        revealAround(vertical, horizontal + 1);
-        revealAround(vertical + 1, horizontal - 1);
-        revealAround(vertical + 1, horizontal);
-        revealAround(vertical + 1, horizontal + 1);
     }
 }
