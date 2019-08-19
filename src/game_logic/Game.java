@@ -1,42 +1,52 @@
 package game_logic;
 
-// Maybe this timer
 
 public final class Game {
-    private GameState state = GameState.READY;
+    private GameState state;
     private GameField field;
     private GameDifficulty difficulty;
 
     public Game() {
-        difficulty = GameDifficulty.INTERMEDIATE;
-        field = new GameField(difficulty);
+        restart(GameDifficulty.INTERMEDIATE);
     }
 
     public Game(GameDifficulty difficulty) {
-        this.difficulty = difficulty;
-        field = new GameField(difficulty);
+        restart(difficulty);
     }
 
     public GameState getState() {
         return state;
     }
 
-    public void setState(GameState state) {
-        this.state = state;
+    private GameDifficulty getDifficulty() {
+        return difficulty;
     }
 
-    public GameField getField() {
-        return field;
+    public void revealCellOnField(int vertical, int horizontal) {
+        state = GameState.GOING;
+        field.revealCell(vertical, horizontal);
+        if (field.isBlown()) {
+            state = GameState.LOSS;
+        } else if (field.isClear()) {
+            state = GameState.WIN;
+        }
     }
 
-    public void changeDifficulty(GameDifficulty difficulty) {
+    public void putFlagOnField(int vertical, int horizontal) {
+        field.putFlag(vertical, horizontal);
+    }
+
+    public void removeFlagFromField(int vertical, int horizontal) {
+        field.removeFlag(vertical, horizontal);
+    }
+
+    public void restart(GameDifficulty difficulty) {
         this.difficulty = difficulty;
         field = new GameField(difficulty);
         state = GameState.READY;
     }
 
-    public void start() {
-        field.prepareToStart();
-        state = GameState.READY;
+    public void printField() {
+        field.print();
     }
 }

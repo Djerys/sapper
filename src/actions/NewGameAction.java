@@ -15,8 +15,6 @@ public class NewGameAction extends Action {
 
     @Override
     public void process() {
-        game.changeDifficulty(difficulty);
-        game.getField().prepareToStart();
-        game.setState(GameState.READY);
+        game.restart(difficulty);
     }
 }

@@ -1,31 +1,26 @@
 package game_logic;
 
-import java.util.Objects;
 import java.util.Random;
+import java.util.Set;
 
 public final class GameField {
     private boolean blown = false;
     private int usedFlagsCount = 0;
     private int openCleanCellsCount = 0;
-    private Cell[][] space;
 
+    private final Cell[][] space;
     private final int verticalSize;
     private final int horizontalSize;
     private final int spaceSize;
     private final int minesNumber;
 
-    private static class Cell {
-        boolean isRevealed = false;
-        boolean hasMine = false;
-        boolean hasFlag = false;
-        int nearMinesCount = 0;
-    }
-
-    public GameField(GameDifficulty difficulty) {
+    GameField(GameDifficulty difficulty) {
         this.verticalSize = difficulty.getVerticalSize();
         this.horizontalSize = difficulty.getHorizontalSize();
         this.spaceSize = verticalSize * horizontalSize;
         this.minesNumber = difficulty.getMinesNumber();
+        space = new Cell[verticalSize][horizontalSize];
+        initializeSpace();
     }
 
     public boolean isBlown() {
@@ -38,19 +33,6 @@ public final class GameField {
 
     public int getUsedFlagsCount() {
         return usedFlagsCount;
-    }
-
-    public void setupMines() {
-        randomMines();
-        calculateNearMinesCount();
-    }
-
-    public void prepareToStart() {
-        for (int i = 0; i < verticalSize; i++) {
-            for (int j = 0; j < horizontalSize; j++) {
-                space[i][j] = new Cell();
-            }
-        }
     }
 
     /**
@@ -70,13 +52,14 @@ public final class GameField {
      *
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @return true if cell was open else false
      */
-    public boolean revealCell(int vertical, int horizontal) {
-        checkSpaceIndexes(vertical, horizontal);
+    public void revealCell(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || cell.hasFlag) {
-            return false;
+            return;
+        }
+        if (openCleanCellsCount == 0) {
+            setupMines(vertical, horizontal);
         }
         if (cell.hasMine) {
             blown = true;
@@ -84,7 +67,6 @@ public final class GameField {
             openCleanCellsCount++;
         }
         revealAround(vertical, horizontal);
-        return true;
     }
 
     /**
@@ -94,15 +76,13 @@ public final class GameField {
      * @param horizontal horizontal coordinate for field space
      * @return true if cell was marked else false
      */
-    public boolean putFlag(int vertical, int horizontal) {
-        checkSpaceIndexes(vertical, horizontal);
+    public void putFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || usedFlagsCount == minesNumber) {
-            return false;
+            return;
         }
         cell.hasFlag = true;
         usedFlagsCount++;
-        return true;
     }
 
     /**
@@ -112,28 +92,64 @@ public final class GameField {
      * @param horizontal horizontal coordinate for field space
      * @return true if flag was removed else false
      */
-    public boolean removeFlag(int vertical, int horizontal) {
-        checkSpaceIndexes(vertical, horizontal);
+    public void removeFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || !cell.hasFlag) {
-            return false;
+            return;
         }
         cell.hasFlag = false;
         usedFlagsCount--;
-        return true;
     }
 
-    private void randomMines() {
+    public void print() {
+        for (var row : space) {
+            for (var cell : row) {
+                if (cell.hasFlag) {
+                    System.out.print("| ");
+                } else if (!cell.isRevealed) {
+                    System.out.print("# ");
+                } else if (cell.hasMine) {
+                    System.out.print("* ");
+                } else if (cell.nearMinesCount != 0) {
+                    System.out.print(cell.nearMinesCount + " ");
+                } else {
+                    System.out.print("- ");
+                }
+            }
+            System.out.println();
+        }
+    }
+
+    private void initializeSpace() {
+        for (int i = 0; i < verticalSize; i++) {
+            for (int j = 0; j < horizontalSize; j++) {
+                space[i][j] = new Cell();
+            }
+        }
+    }
+
+    private void setupMines(int nonMineVertical, int nonMineHorizontal) {
+        randomMines(nonMineVertical, nonMineHorizontal);
+        calculateNearMinesCount();
+    }
+
+    private void randomMines(int nonMineVertical, int nonMineHorizontal) {
         var random = new Random();
         int i = 0;
         while (i < minesNumber) {
             int vertical = random.nextInt(verticalSize);
             int horizontal = random.nextInt(horizontalSize);
-            if (!space[vertical][horizontal].hasMine) {
+            var shouldHaveMine = !dimensionRange(nonMineVertical).contains(vertical)
+                    || !dimensionRange(nonMineHorizontal).contains(horizontal);
+            if (!space[vertical][horizontal].hasMine && shouldHaveMine) {
                 space[vertical][horizontal].hasMine = true;
                 i++;
             }
         }
+    }
+
+    private Set<Integer> dimensionRange(int dimension) {
+        return Set.of(dimension - 1, dimension, dimension + 1);
     }
 
     private void calculateNearMinesCount() {
@@ -145,10 +161,10 @@ public final class GameField {
     }
 
     private void calculateNears(int vertical, int horizontal) {
-        for (int verticalOffset = -1; verticalOffset <= 1; verticalOffset++) {
-            for (int horizontalOffset = -1; horizontalOffset <= 1; horizontalOffset++) {
-                var nearCell = space[vertical + verticalOffset][horizontal + horizontalOffset];
-                if (!isOutOfBounds(vertical, horizontal)) {
+        for (int vOffset = -1; vOffset <= 1; vOffset++) {
+            for (int hOffset = -1; hOffset <= 1; hOffset++) {
+                if (!isOutOfBounds(vertical + vOffset, horizontal + hOffset)) {
+                    var nearCell = space[vertical + vOffset][horizontal + hOffset];
                     space[vertical][horizontal].nearMinesCount += nearCell.hasMine ? 1 : 0;
                 }
             }
@@ -164,6 +180,7 @@ public final class GameField {
         if (isOutOfBounds(vertical, horizontal)) return;
         var cell = space[vertical][horizontal];
         if (cell.isRevealed) return;
+        if (cell.hasMine) return;
         cell.isRevealed = true;
         if (cell.nearMinesCount != 0) return;
         revealAround(vertical - 1, horizontal - 1);
@@ -174,10 +191,5 @@ public final class GameField {
         revealAround(vertical + 1, horizontal - 1);
         revealAround(vertical + 1, horizontal);
         revealAround(vertical + 1, horizontal + 1);
-    }
-
-    private void checkSpaceIndexes(int vertical, int horizontal) {
-        Objects.checkIndex(vertical, space.length);
-        Objects.checkIndex(horizontal, space[vertical].length);
     }
 }

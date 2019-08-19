@@ -24,17 +24,10 @@ public class RevealCellAction extends CellAction {
     }
 
     private void setup() {
-        game.getField().setupMines();
-        game.setState(GameState.GOING);
+        // code...
     }
 
     private void reveal() {
-        if (game.getField().revealCell(vertical, horizontal)) {
-            if (game.getField().isBlown()) {
-                game.setState(GameState.LOSS);
-            } else if (game.getField().isClear()) {
-                game.setState(GameState.WIN);
-            }
-        }
+        // code...
     }
 }
