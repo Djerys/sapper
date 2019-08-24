@@ -1,14 +1,14 @@
 package game_logic.event;
 
-import ui.GameButton;
+import ui.UI;
 
 import java.util.EventListener;
 
 public class FieldChangeListener implements EventListener {
-    private GameButton button;
+    private UI ui;
 
-    public FieldChangeListener(GameButton button) {
-        this.button = button;
+    public FieldChangeListener(UI ui) {
+        this.ui = ui;
     }
 
     public void fieldChanged(FieldChangeEvent event) {

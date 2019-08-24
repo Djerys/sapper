@@ -1,6 +1,5 @@
-package ui;
-
 import game_logic.Game;
+import ui.GameFrame;
 
 import javax.swing.*;
 
