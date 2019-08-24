@@ -1,10 +1,17 @@
 package game_logic;
 
 
+import game_logic.event.FieldChangeEvent;
+import game_logic.event.FieldChangeListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public final class Game {
     private GameState state;
     private GameField field;
     private GameDifficulty difficulty;
+    private List<FieldChangeListener> changeListeners = new ArrayList<>();
 
     public Game() {
         restart(GameDifficulty.INTERMEDIATE);
@@ -20,6 +27,22 @@ public final class Game {
 
     private GameDifficulty getDifficulty() {
         return difficulty;
+    }
+
+    public int getVerticalSize() {
+        return difficulty.getVerticalSize();
+    }
+
+    public int getHorizontalSize() {
+        return difficulty.getHorizontalSize();
+    }
+
+    public int getUnusedFlagsCount() {
+        return field.getUnusedFlagsCount();
+    }
+
+    public void addFieldChangeListener(FieldChangeListener listener) {
+        changeListeners.add(listener);
     }
 
     public void tryRevealCell(int vertical, int horizontal) {
@@ -40,18 +63,6 @@ public final class Game {
         field.tryRemoveFlag(vertical, horizontal);
     }
 
-    public int getVerticalSize() {
-        return difficulty.getVerticalSize();
-    }
-
-    public int getHorizontalSize() {
-        return difficulty.getHorizontalSize();
-    }
-
-    public int getUnusedFlagsCount() {
-        return field.getUnusedFlagsCount();
-    }
-
     public void restart(GameDifficulty difficulty) {
         this.difficulty = difficulty;
         field = new GameField(difficulty);
@@ -65,6 +76,12 @@ public final class Game {
                 break;
             case LOSS:
                 field.revealNotFlaggedMines();
+        }
+    }
+
+    private void fireFieldChanged(FieldChangeEvent event) {
+        for (var listener : changeListeners) {
+            listener.fieldChanged(event);
         }
     }
 

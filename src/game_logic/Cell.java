@@ -1,6 +1,6 @@
 package game_logic;
 
-class Cell {
+class Cell implements Cloneable {
     boolean isRevealed = false;
     boolean hasMine = false;
     boolean hasFlag = false;
@@ -14,5 +14,14 @@ class Cell {
                 ", hasFlag=" + hasFlag +
                 ", nearMinesCount=" + nearMinesCount +
                 '}';
+    }
+
+    @Override
+    public Cell clone() {
+        try {
+            return (Cell) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

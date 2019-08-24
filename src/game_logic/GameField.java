@@ -33,6 +33,10 @@ final class GameField {
         return !blown && isAllClearCellsOpen;
     }
 
+    Cell get(int vertical, int horizontal) {
+        return space[vertical][horizontal].clone();
+    }
+
     int getUnusedFlagsCount() {
         return unusedFlagsCount;
     }

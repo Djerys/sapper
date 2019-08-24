@@ -11,8 +11,8 @@ public class GameTest {
             game.printField();
             System.out.println();
             System.out.print("Введите координаты поля: ");
-            var vertical = in.nextInt();
-            var horizontal = in.nextInt();
+            var vertical = in.nextInt() - 1;
+            var horizontal = in.nextInt() - 1;
             var command = in.next();
             switch (command) {
                 case "reveal":
