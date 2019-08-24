@@ -3,7 +3,7 @@ package game_logic;
 import java.util.Random;
 import java.util.Set;
 
-public final class GameField {
+final class GameField {
     private int unusedFlagsCount;
     private boolean blown = false;
     private boolean clear = false;
