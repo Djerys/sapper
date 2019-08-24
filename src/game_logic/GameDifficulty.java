@@ -7,12 +7,12 @@ public enum GameDifficulty {
 
     private final int verticalSize;
     private final int horizontalSize;
-    private final int minesNumber;
+    private final int minesCount;
 
-    GameDifficulty(int verticalSize, int horizontalSize, int minesNumber) {
+    GameDifficulty(int verticalSize, int horizontalSize, int minesCount) {
         this.verticalSize = verticalSize;
         this.horizontalSize = horizontalSize;
-        this.minesNumber = minesNumber;
+        this.minesCount = minesCount;
     }
 
     public int getVerticalSize() {
@@ -23,8 +23,8 @@ public enum GameDifficulty {
         return horizontalSize;
     }
 
-    public int getMinesNumber() {
-        return minesNumber;
+    public int getMinesCount() {
+        return minesCount;
     }
 
     @Override
@@ -32,7 +32,7 @@ public enum GameDifficulty {
         return "GameDifficulty{" +
                 "verticalSize=" + verticalSize +
                 ", horizontalSize=" + horizontalSize +
-                ", minesNumber=" + minesNumber +
+                ", minesNumber=" + minesCount +
                 '}';
     }
 }

@@ -4,25 +4,20 @@ import game_logic.Game;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
-public class GameFieldPanel {
-    private JPanel fieldPanel;
+public class GameFieldPanel extends JPanel {
     private Game game;
 
-    public GameFieldPanel(Game game) {
+    GameFieldPanel(Game game) {
+        super(new GridLayout(game.getVerticalSize(), game.getHorizontalSize()));
         this.game = game;
-        var layout = new GridLayout(game.getHorizontalFieldSize(), game.getVerticalFieldSize());
-        fieldPanel = new JPanel(layout);
-        setupButtons();
+        addButtons();
     }
 
-    private void setupButtons() {
-        for (int i = 0; i <= game.getVerticalFieldSize(); i++) {
-            for (int j = 0; j <= game.getHorizontalFieldSize(); j++) {
-                var button = new JButton();
-                fieldPanel.add(button);
+    private void addButtons() {
+        for (int i = 0; i < game.getVerticalSize(); i++) {
+            for (int j = 0; j < game.getHorizontalSize(); j++) {
+                add(new GameButton(game, i, j));
             }
         }
     }

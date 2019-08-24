@@ -22,9 +22,9 @@ public final class Game {
         return difficulty;
     }
 
-    public void revealCellOnField(int vertical, int horizontal) {
+    public void tryRevealCell(int vertical, int horizontal) {
         state = GameState.GOING;
-        field.revealCell(vertical, horizontal);
+        field.tryRevealCell(vertical, horizontal);
         if (field.isBlown()) {
             state = GameState.LOSS;
         } else if (field.isClear()) {
@@ -32,19 +32,19 @@ public final class Game {
         }
     }
 
-    public void putFlagOnField(int vertical, int horizontal) {
-        field.putFlag(vertical, horizontal);
+    public void tryPutFlag(int vertical, int horizontal) {
+        field.tryPutFlag(vertical, horizontal);
     }
 
-    public void removeFlagFromField(int vertical, int horizontal) {
-        field.removeFlag(vertical, horizontal);
+    public void tryRemoveFlag(int vertical, int horizontal) {
+        field.tryRemoveFlag(vertical, horizontal);
     }
 
-    public int getVerticalFieldSize() {
+    public int getVerticalSize() {
         return difficulty.getVerticalSize();
     }
 
-    public int getHorizontalFieldSize() {
+    public int getHorizontalSize() {
         return difficulty.getHorizontalSize();
     }
 

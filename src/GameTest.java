@@ -1,5 +1,4 @@
 import game_logic.Game;
-import game_logic.GameDifficulty;
 import game_logic.GameState;
 
 import java.util.Scanner;
@@ -17,13 +16,13 @@ public class GameTest {
             var command = in.next();
             switch (command) {
                 case "reveal":
-                    game.revealCellOnField(vertical, horizontal);
+                    game.tryRevealCell(vertical, horizontal);
                     break;
                 case "put":
-                    game.putFlagOnField(vertical, horizontal);
+                    game.tryPutFlag(vertical, horizontal);
                     break;
                 case "remove":
-                    game.removeFlagFromField(vertical, horizontal);
+                    game.tryRemoveFlag(vertical, horizontal);
             }
             System.out.println();
         }
