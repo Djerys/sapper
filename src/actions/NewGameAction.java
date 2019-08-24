@@ -2,7 +2,6 @@ package actions;
 
 import actions.base.Action;
 import game_logic.GameDifficulty;
-import game_logic.GameState;
 import ui.GameClient;
 
 public class NewGameAction extends Action {

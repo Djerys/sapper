@@ -25,23 +25,23 @@ public final class GameField {
         initializeSpace();
     }
 
-    public boolean isBlown() {
+    boolean isBlown() {
         return blown;
     }
 
-    public boolean isClear() {
+    boolean isClear() {
         var isAllClearCellsOpen = openCleanCellsCount == spaceSize - minesCount;
         return !blown && isAllClearCellsOpen;
     }
 
-    public int getUnusedFlagsCount() {
+    int getUnusedFlagsCount() {
         return unusedFlagsCount;
     }
 
     /**
      * Reveals all cells in field space.
      */
-    public void revealAllCells() {
+    void revealAllCells() {
         for (int i = 0; i < verticalSize; i++) {
             for (int j = 0; j < horizontalSize; j++) {
                 space[i][j].isRevealed = true;
@@ -50,7 +50,7 @@ public final class GameField {
         openCleanCellsCount = spaceSize - minesCount;
     }
 
-    public void revealNotFlaggedMines() {
+    void revealNotFlaggedMines() {
         for (int i = 0; i < verticalSize; i++) {
             for (int j = 0; j < horizontalSize; j++) {
                 if (!space[i][j].hasFlag && space[i][j].hasMine) {
@@ -66,7 +66,7 @@ public final class GameField {
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
      */
-    public void revealCell(int vertical, int horizontal) {
+    void revealCell(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || cell.hasFlag) {
             return;
@@ -87,9 +87,8 @@ public final class GameField {
      *
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @return true if cell was marked else false
      */
-    public void putFlag(int vertical, int horizontal) {
+    void putFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || unusedFlagsCount == 0) {
             return;
@@ -103,9 +102,8 @@ public final class GameField {
      *
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
-     * @return true if flag was removed else false
      */
-    public void removeFlag(int vertical, int horizontal) {
+    void removeFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || !cell.hasFlag) {
             return;
@@ -114,7 +112,7 @@ public final class GameField {
         unusedFlagsCount++;
     }
 
-    public void print() {
+    void print() {
         for (var row : space) {
             for (var cell : row) {
                 if (cell.hasFlag) {

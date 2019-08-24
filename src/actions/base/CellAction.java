@@ -1,6 +1,5 @@
 package actions.base;
 
-import actions.base.Action;
 import ui.GameClient;
 
 public abstract class CellAction extends Action {

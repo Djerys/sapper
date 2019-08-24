@@ -40,6 +40,14 @@ public final class Game {
         field.removeFlag(vertical, horizontal);
     }
 
+    public int getVerticalFieldSize() {
+        return difficulty.getVerticalSize();
+    }
+
+    public int getHorizontalFieldSize() {
+        return difficulty.getHorizontalSize();
+    }
+
     public int getUnusedFlagsCount() {
         return field.getUnusedFlagsCount();
     }

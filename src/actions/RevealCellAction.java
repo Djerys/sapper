@@ -1,7 +1,6 @@
 package actions;
 
 import actions.base.CellAction;
-import game_logic.GameState;
 import ui.GameClient;
 
 public class RevealCellAction extends CellAction {
