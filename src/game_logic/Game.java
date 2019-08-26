@@ -1,9 +1,19 @@
 package game_logic;
 
+import game_logic.event.CellEvent;
+import game_logic.event.CellListener;
+import game_logic.event.FewCellsEvent;
+import game_logic.event.FewCellsListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public final class Game {
     private GameState state;
     private GameField field;
     private GameDifficulty difficulty;
+    private List<CellListener> cellChangeListeners  = new ArrayList<>();
+    private List<FewCellsListener> fewCellsChangeListeners = new ArrayList<>();
 
     public Game() {
         restart(GameDifficulty.INTERMEDIATE);
@@ -57,11 +67,15 @@ public final class Game {
         } else if (field.isClear()) {
             state = GameState.WIN;
         }
+        fireFewCellsChanged(new FewCellsEvent());
     }
 
     public void toggleFlag(int vertical, int horizontal) {
-        field.putFlag(vertical, horizontal);
-        field.removeFlag(vertical, horizontal);
+        var wasPut = field.putFlag(vertical, horizontal);
+        if (!wasPut) {
+            field.removeFlag(vertical, horizontal);
+        }
+        fireCellChanged(new CellEvent(vertical, horizontal));
     }
 
     public void restart(GameDifficulty difficulty) {
@@ -77,6 +91,34 @@ public final class Game {
                 break;
             case LOSS:
                 field.revealNotFlaggedMines();
+        }
+    }
+
+    public void addCellListener(CellListener listener) {
+        cellChangeListeners.add(listener);
+    }
+
+    public void removeCellListener(CellListener listener) {
+        cellChangeListeners.remove(listener);
+    }
+
+    public void addFewCellsListener(FewCellsListener listener) {
+        fewCellsChangeListeners.add(listener);
+    }
+
+    public void removeFewCellsListener(FewCellsListener listener) {
+        fewCellsChangeListeners.remove(listener);
+    }
+
+    private void fireCellChanged(CellEvent event) {
+        for (var listener : cellChangeListeners) {
+            listener.cellChanged(event);
+        }
+    }
+
+    private void fireFewCellsChanged(FewCellsEvent event) {
+        for (var listener : fewCellsChangeListeners) {
+            listener.fewCellsChanged(event);
         }
     }
 

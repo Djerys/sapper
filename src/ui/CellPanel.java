@@ -3,8 +3,9 @@ package ui;
 import game_logic.Game;
 
 import javax.swing.*;
+import java.awt.*;
 
-public class CellPanel extends JPanel {
+class CellPanel extends JPanel {
     private final int vertical;
     private final int horizontal;
 
@@ -12,14 +13,16 @@ public class CellPanel extends JPanel {
 
     private JLabel label = new JLabel();
 
-    public CellPanel(Game game, int vertical, int horizontal) {
+    CellPanel(Game game, int vertical, int horizontal) {
         this.game = game;
         this.vertical = vertical;
         this.horizontal = horizontal;
-        updateCell();
+        add(label);
+        setPreferredSize(new Dimension(30, 30));
+        update();
     }
 
-    public void updateCell() {
+    void update() {
         if (game.hasFlag(vertical, horizontal)) {
             label.setText("F");
         } else if (!game.isRevealed(vertical, horizontal)) {

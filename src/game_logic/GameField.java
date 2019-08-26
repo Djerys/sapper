@@ -58,9 +58,6 @@ final class GameField {
         return unusedFlagsCount;
     }
 
-    /**
-     * Reveals all cells in field space.
-     */
     void revealAllCells() {
         for (int i = 0; i < verticalSize; i++) {
             for (int j = 0; j < horizontalSize; j++) {
@@ -80,14 +77,11 @@ final class GameField {
         }
     }
 
-    /**
-     * Reveals cell located on given coordinates.
-     *
-     * @param vertical   vertical coordinate for field space
-     * @param horizontal horizontal coordinate for field space
-     */
     void reveal(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
+        if (blown) {
+            return;
+        }
         if (openCleanCellsCount == 0) {
             setupMines(vertical, horizontal);
         }
@@ -97,34 +91,24 @@ final class GameField {
         innerReveal(vertical, horizontal);
     }
 
-    /**
-     * Puts flag on cell located on given coordinates.
-     *
-     * @param vertical   vertical coordinate for field space
-     * @param horizontal horizontal coordinate for field space
-     */
-    void putFlag(int vertical, int horizontal) {
+    boolean putFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
-        if (cell.isRevealed || unusedFlagsCount == 0) {
-            return;
+        if (cell.isRevealed || cell.hasFlag || unusedFlagsCount == 0) {
+            return false;
         }
         cell.hasFlag = true;
         unusedFlagsCount--;
+        return true;
     }
 
-    /**
-     * Removes flag from cell located on given coordinates.
-     *
-     * @param vertical   vertical coordinate for field space
-     * @param horizontal horizontal coordinate for field space
-     */
-    void removeFlag(int vertical, int horizontal) {
+    boolean removeFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || !cell.hasFlag) {
-            return;
+            return false;
         }
         cell.hasFlag = false;
         unusedFlagsCount++;
+        return false;
     }
 
     void print() {
@@ -157,7 +141,7 @@ final class GameField {
     private void innerReveal(int vertical, int horizontal) {
         if (isOutOfBounds(vertical, horizontal)) return;
         var cell = space[vertical][horizontal];
-        if (cell.isRevealed) return;
+        if (cell.isRevealed || cell.hasFlag) return;
         cell.isRevealed = true;
         openCleanCellsCount++;
         if (cell.nearMinesCount != 0) return;
