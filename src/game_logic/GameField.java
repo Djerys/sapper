@@ -1,5 +1,6 @@
 package game_logic;
 
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
@@ -33,7 +34,23 @@ final class GameField {
         return !blown && isAllClearCellsOpen;
     }
 
-    Cell get(int vertical, int horizontal) {
+    boolean isRevealed(int vertical, int horizontal) {
+        return space[vertical][horizontal].isRevealed;
+    }
+
+    boolean hasMine(int vertical, int horizontal) {
+        return space[vertical][horizontal].hasMine;
+    }
+
+    boolean hasFlag(int vertical, int horizontal) {
+        return space[vertical][horizontal].hasFlag;
+    }
+
+    int nearMinesCount(int vertical, int horizontal) {
+        return space[vertical][horizontal].nearMinesCount;
+    }
+
+    Cell getCell(int vertical, int horizontal) {
         return space[vertical][horizontal].clone();
     }
 
@@ -69,20 +86,15 @@ final class GameField {
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
      */
-    void tryRevealCell(int vertical, int horizontal) {
+    void reveal(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
-        if (cell.isRevealed || cell.hasFlag) {
-            return;
-        }
         if (openCleanCellsCount == 0) {
             setupMines(vertical, horizontal);
         }
         if (cell.hasMine) {
             blown = true;
-        } else {
-            openCleanCellsCount++;
         }
-        revealAround(vertical, horizontal);
+        innerReveal(vertical, horizontal);
     }
 
     /**
@@ -91,7 +103,7 @@ final class GameField {
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
      */
-    void tryPutFlag(int vertical, int horizontal) {
+    void putFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || unusedFlagsCount == 0) {
             return;
@@ -106,7 +118,7 @@ final class GameField {
      * @param vertical   vertical coordinate for field space
      * @param horizontal horizontal coordinate for field space
      */
-    void tryRemoveFlag(int vertical, int horizontal) {
+    void removeFlag(int vertical, int horizontal) {
         var cell = space[vertical][horizontal];
         if (cell.isRevealed || !cell.hasFlag) {
             return;
@@ -142,21 +154,21 @@ final class GameField {
         }
     }
 
-    private void revealAround(int vertical, int horizontal) {
+    private void innerReveal(int vertical, int horizontal) {
         if (isOutOfBounds(vertical, horizontal)) return;
         var cell = space[vertical][horizontal];
         if (cell.isRevealed) return;
-        if (cell.hasMine) return;
         cell.isRevealed = true;
+        openCleanCellsCount++;
         if (cell.nearMinesCount != 0) return;
-        revealAround(vertical - 1, horizontal - 1);
-        revealAround(vertical - 1, horizontal);
-        revealAround(vertical - 1, horizontal + 1);
-        revealAround(vertical, horizontal - 1);
-        revealAround(vertical, horizontal + 1);
-        revealAround(vertical + 1, horizontal - 1);
-        revealAround(vertical + 1, horizontal);
-        revealAround(vertical + 1, horizontal + 1);
+        innerReveal(vertical - 1, horizontal - 1);
+        innerReveal(vertical - 1, horizontal);
+        innerReveal(vertical - 1, horizontal + 1);
+        innerReveal(vertical, horizontal - 1);
+        innerReveal(vertical, horizontal + 1);
+        innerReveal(vertical + 1, horizontal - 1);
+        innerReveal(vertical + 1, horizontal);
+        innerReveal(vertical + 1, horizontal + 1);
     }
 
     private void setupMines(int nonMineVertical, int nonMineHorizontal) {

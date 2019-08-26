@@ -1,17 +1,9 @@
 package game_logic;
 
-
-import game_logic.event.FieldChangeEvent;
-import game_logic.event.FieldChangeListener;
-
-import java.util.ArrayList;
-import java.util.List;
-
 public final class Game {
     private GameState state;
     private GameField field;
     private GameDifficulty difficulty;
-    private List<FieldChangeListener> changeListeners = new ArrayList<>();
 
     public Game() {
         restart(GameDifficulty.INTERMEDIATE);
@@ -41,13 +33,25 @@ public final class Game {
         return field.getUnusedFlagsCount();
     }
 
-    public void addFieldChangeListener(FieldChangeListener listener) {
-        changeListeners.add(listener);
+    public boolean isRevealed(int vertical, int horizontal) {
+        return field.isRevealed(vertical, horizontal);
     }
 
-    public void tryRevealCell(int vertical, int horizontal) {
+    public boolean hasMine(int vertical, int horizontal) {
+        return field.hasMine(vertical, horizontal);
+    }
+
+    public boolean hasFlag(int vertical, int horizontal) {
+        return field.hasFlag(vertical, horizontal);
+    }
+
+    public int nearMinesCount(int vertical, int horizontal) {
+        return field.nearMinesCount(vertical, horizontal);
+    }
+
+    public void reveal(int vertical, int horizontal) {
         state = GameState.GOING;
-        field.tryRevealCell(vertical, horizontal);
+        field.reveal(vertical, horizontal);
         if (field.isBlown()) {
             state = GameState.LOSS;
         } else if (field.isClear()) {
@@ -55,12 +59,9 @@ public final class Game {
         }
     }
 
-    public void tryPutFlag(int vertical, int horizontal) {
-        field.tryPutFlag(vertical, horizontal);
-    }
-
-    public void tryRemoveFlag(int vertical, int horizontal) {
-        field.tryRemoveFlag(vertical, horizontal);
+    public void toggleFlag(int vertical, int horizontal) {
+        field.putFlag(vertical, horizontal);
+        field.removeFlag(vertical, horizontal);
     }
 
     public void restart(GameDifficulty difficulty) {
@@ -76,12 +77,6 @@ public final class Game {
                 break;
             case LOSS:
                 field.revealNotFlaggedMines();
-        }
-    }
-
-    private void fireFieldChanged(FieldChangeEvent event) {
-        for (var listener : changeListeners) {
-            listener.fieldChanged(event);
         }
     }
 

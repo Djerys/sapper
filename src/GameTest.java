@@ -16,13 +16,11 @@ public class GameTest {
             var command = in.next();
             switch (command) {
                 case "reveal":
-                    game.tryRevealCell(vertical, horizontal);
+                    game.reveal(vertical, horizontal);
                     break;
-                case "put":
-                    game.tryPutFlag(vertical, horizontal);
+                case "toggle":
+                    game.toggleFlag(vertical, horizontal);
                     break;
-                case "remove":
-                    game.tryRemoveFlag(vertical, horizontal);
             }
             System.out.println();
         }
