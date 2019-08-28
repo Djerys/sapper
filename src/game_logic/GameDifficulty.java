@@ -5,22 +5,22 @@ public enum GameDifficulty {
     INTERMEDIATE(16, 16, 40),
     PROFESSIONAL(16, 30, 99);
 
-    private final int verticalSize;
-    private final int horizontalSize;
+    private final int heightSize;
+    private final int widthSize;
     private final int minesCount;
 
-    GameDifficulty(int verticalSize, int horizontalSize, int minesCount) {
-        this.verticalSize = verticalSize;
-        this.horizontalSize = horizontalSize;
+    GameDifficulty(int widthSize, int heightSize, int minesCount) {
+        this.widthSize = widthSize;
+        this.heightSize = heightSize;
         this.minesCount = minesCount;
     }
 
-    public int getVerticalSize() {
-        return verticalSize;
+    public int getWidthSize() {
+        return widthSize;
     }
 
-    public int getHorizontalSize() {
-        return horizontalSize;
+    public int getHeightSize() {
+        return heightSize;
     }
 
     public int getMinesCount() {
@@ -30,8 +30,8 @@ public enum GameDifficulty {
     @Override
     public String toString() {
         return "GameDifficulty{" +
-                "verticalSize=" + verticalSize +
-                ", horizontalSize=" + horizontalSize +
+                "verticalSize=" + heightSize +
+                ", horizontalSize=" + widthSize +
                 ", minesNumber=" + minesCount +
                 '}';
     }

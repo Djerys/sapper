@@ -1,27 +1,25 @@
 package game_logic;
 
 import java.util.Random;
-import java.util.Set;
 
 final class GameField {
     private int unusedFlagsCount;
     private boolean blown = false;
     private int openCleanCellsCount = 0;
 
-    private final Cell[][] space;
-    private final int verticalSize;
-    private final int horizontalSize;
+    private final FieldSpace cells;
+    private final int widthSize;
+    private final int heightSize;
     private final int spaceSize;
     private final int minesCount;
 
     GameField(GameDifficulty difficulty) {
-        this.verticalSize = difficulty.getVerticalSize();
-        this.horizontalSize = difficulty.getHorizontalSize();
-        this.spaceSize = verticalSize * horizontalSize;
+        this.widthSize = difficulty.getWidthSize();
+        this.heightSize = difficulty.getHeightSize();
+        this.spaceSize = heightSize * widthSize;
         this.minesCount = difficulty.getMinesCount();
         unusedFlagsCount = minesCount;
-        space = new Cell[verticalSize][horizontalSize];
-        initializeSpace();
+        cells = new FieldSpace(widthSize, heightSize);
     }
 
     boolean isBlown() {
@@ -33,20 +31,20 @@ final class GameField {
         return !blown && isAllClearCellsOpen;
     }
 
-    boolean isRevealed(int vertical, int horizontal) {
-        return space[vertical][horizontal].isRevealed;
+    boolean isRevealed(Position position) {
+        return cells.get(position).isRevealed;
     }
 
-    boolean hasMine(int vertical, int horizontal) {
-        return space[vertical][horizontal].hasMine;
+    boolean hasMine(Position position) {
+        return cells.get(position).hasMine;
     }
 
-    boolean hasFlag(int vertical, int horizontal) {
-        return space[vertical][horizontal].hasFlag;
+    boolean hasFlag(Position position) {
+        return cells.get(position).hasFlag;
     }
 
-    int nearMinesCount(int vertical, int horizontal) {
-        return space[vertical][horizontal].nearMinesCount;
+    int nearMinesCount(Position position) {
+        return cells.get(position).nearMinesCount;
     }
 
     int getUnusedFlagsCount() {
@@ -54,40 +52,41 @@ final class GameField {
     }
 
     void revealAllCells() {
-        for (int i = 0; i < verticalSize; i++) {
-            for (int j = 0; j < horizontalSize; j++) {
-                space[i][j].isRevealed = true;
+        for (int i = 0; i < widthSize; i++) {
+            for (int j = 0; j < heightSize; j++) {
+                cells.get(new Position(i, j)).isRevealed = true;
             }
         }
         openCleanCellsCount = spaceSize - minesCount;
     }
 
     void revealNotFlaggedMines() {
-        for (int i = 0; i < verticalSize; i++) {
-            for (int j = 0; j < horizontalSize; j++) {
-                if (!space[i][j].hasFlag && space[i][j].hasMine) {
-                    space[i][j].isRevealed = true;
+        for (int i = 0; i < widthSize; i++) {
+            for (int j = 0; j < heightSize; j++) {
+                var cell = cells.get(new Position(i, j));
+                if (!cell.hasFlag && cell.hasMine) {
+                    cell.isRevealed = true;
                 }
             }
         }
     }
 
-    void reveal(int vertical, int horizontal) {
-        var cell = space[vertical][horizontal];
+    void reveal(Position position) {
+        var cell = cells.get(position);
         if (blown) {
             return;
         }
         if (openCleanCellsCount == 0) {
-            setupMines(vertical, horizontal);
+            setupMines(position);
         }
         if (cell.hasMine) {
             blown = true;
         }
-        innerReveal(vertical, horizontal);
+        innerReveal(position.getWidth(), position.getHeight());
     }
 
-    boolean putFlag(int vertical, int horizontal) {
-        var cell = space[vertical][horizontal];
+    boolean putFlag(Position position) {
+        var cell = cells.get(position);
         if (cell.isRevealed || cell.hasFlag || unusedFlagsCount == 0) {
             return false;
         }
@@ -96,8 +95,8 @@ final class GameField {
         return true;
     }
 
-    boolean removeFlag(int vertical, int horizontal) {
-        var cell = space[vertical][horizontal];
+    boolean removeFlag(Position position) {
+        var cell = cells.get(position);
         if (cell.isRevealed || !cell.hasFlag) {
             return false;
         }
@@ -106,76 +105,61 @@ final class GameField {
         return true;
     }
 
-    private void initializeSpace() {
-        for (int i = 0; i < verticalSize; i++) {
-            for (int j = 0; j < horizontalSize; j++) {
-                space[i][j] = new Cell();
-            }
-        }
-    }
-
-    private void innerReveal(int vertical, int horizontal) {
-        if (isOutOfBounds(vertical, horizontal)) return;
-        var cell = space[vertical][horizontal];
+    private void innerReveal(int width, int height) {
+        if (isOutOfBounds(width, height)) return;
+        var cell = cells.get(new Position(width, height));
         if (cell.isRevealed || cell.hasFlag) return;
         cell.isRevealed = true;
         openCleanCellsCount++;
         if (cell.nearMinesCount != 0) return;
-        innerReveal(vertical - 1, horizontal - 1);
-        innerReveal(vertical - 1, horizontal);
-        innerReveal(vertical - 1, horizontal + 1);
-        innerReveal(vertical, horizontal - 1);
-        innerReveal(vertical, horizontal + 1);
-        innerReveal(vertical + 1, horizontal - 1);
-        innerReveal(vertical + 1, horizontal);
-        innerReveal(vertical + 1, horizontal + 1);
+        for (int wOffset = -1; wOffset <= 1; wOffset++) {
+            for (int hOffset = -1; hOffset <= 1; hOffset++) {
+                innerReveal(width + wOffset, height + hOffset);
+            }
+        }
     }
 
-    private void setupMines(int nonMineVertical, int nonMineHorizontal) {
-        randomMines(nonMineVertical, nonMineHorizontal);
+    private void setupMines(Position nonMinePosition) {
+        randomMines(nonMinePosition);
         calculateNearMines();
     }
 
-    private void randomMines(int nonMineVertical, int nonMineHorizontal) {
+    private void randomMines(Position nonMinePosition) {
         var random = new Random();
         int i = 0;
         while (i < minesCount) {
-            int vertical = random.nextInt(verticalSize);
-            int horizontal = random.nextInt(horizontalSize);
-            var shouldHaveMine = !dimensionRange(nonMineVertical).contains(vertical)
-                    || !dimensionRange(nonMineHorizontal).contains(horizontal);
-            if (!space[vertical][horizontal].hasMine && shouldHaveMine) {
-                space[vertical][horizontal].hasMine = true;
+            int width = random.nextInt(widthSize);
+            int height = random.nextInt(heightSize);
+            var position = new Position(width, height);
+            var cell = cells.get(position);
+            if (!cell.hasMine && !nonMinePosition.isNeighbourOf(position)) {
+                cell.hasMine = true;
                 i++;
             }
         }
     }
 
-    private Set<Integer> dimensionRange(int dimension) {
-        return Set.of(dimension - 1, dimension, dimension + 1);
-    }
-
     private void calculateNearMines() {
-        for (int i = 0; i < verticalSize; i++) {
-            for (int j = 0; j < horizontalSize; j++) {
+        for (int i = 0; i < widthSize; i++) {
+            for (int j = 0; j < heightSize; j++) {
                 calculateNearMinesOfCell(i, j);
             }
         }
     }
 
-    private void calculateNearMinesOfCell(int vertical, int horizontal) {
-        for (int vOffset = -1; vOffset <= 1; vOffset++) {
+    private void calculateNearMinesOfCell(int width, int height) {
+        for (int wOffset = -1; wOffset <= 1; wOffset++) {
             for (int hOffset = -1; hOffset <= 1; hOffset++) {
-                if (!isOutOfBounds(vertical + vOffset, horizontal + hOffset)) {
-                    var nearCell = space[vertical + vOffset][horizontal + hOffset];
-                    space[vertical][horizontal].nearMinesCount += nearCell.hasMine ? 1 : 0;
+                if (!isOutOfBounds(width + wOffset, height + hOffset)) {
+                    var nearCell = cells.get(new Position(width + wOffset, height + hOffset));
+                    cells.get(new Position(width, height)).nearMinesCount += nearCell.hasMine ? 1 : 0;
                 }
             }
         }
     }
 
-    private boolean isOutOfBounds(int vertical, int horizontal) {
-        return vertical < 0 || horizontal < 0
-                || vertical >= verticalSize || horizontal >= horizontalSize;
+    private boolean isOutOfBounds(int width, int height) {
+        return width < 0 || height < 0
+                || width >= widthSize || height >= heightSize;
     }
 }

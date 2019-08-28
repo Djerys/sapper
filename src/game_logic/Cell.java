@@ -1,6 +1,6 @@
 package game_logic;
 
-class Cell implements Cloneable {
+final class Cell {
     boolean isRevealed = false;
     boolean hasMine = false;
     boolean hasFlag = false;

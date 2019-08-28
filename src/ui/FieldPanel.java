@@ -1,6 +1,7 @@
 package ui;
 
 import game_logic.Game;
+import game_logic.Position;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,22 +14,20 @@ public class FieldPanel extends JPanel {
     private CellPanel[][] cellPanels;
 
     private static class CellClickListener extends MouseAdapter {
-        private final int vertical;
-        private final int horizontal;
+        private final Position position;
         private final Game game;
 
-        CellClickListener(Game game, int vertical, int horizontal) {
+        CellClickListener(Game game, Position position) {
             this.game = game;
-            this.vertical = vertical;
-            this.horizontal = horizontal;
+            this.position = position;
         }
 
         @Override
         public void mouseClicked(MouseEvent e) {
             if (e.getButton() == MouseEvent.BUTTON1) {
-                game.reveal(vertical, horizontal);
+                game.reveal(position);
             } else if (e.getButton() == MouseEvent.BUTTON3) {
-                game.toggleFlag(vertical, horizontal);
+                game.toggleFlag(position);
             }
             if (game.isEnd()) {
                 game.end();
@@ -38,27 +37,28 @@ public class FieldPanel extends JPanel {
 
     FieldPanel(Game game) {
         this.game = game;
-        setBackground(new Color(128, 132, 134));
         rebuildCells();
     }
 
     void rebuildCells() {
-        int verticalSize = game.getVerticalSize();
-        int horizontalSize = game.getHorizontalSize();
-        cellPanels = new CellPanel[verticalSize][horizontalSize];
+        int widthSize = game.getWidthSize();
+        int heightSize = game.getHeightSize();
+        cellPanels = new CellPanel[widthSize][heightSize];
+        setLayout(new GridLayout(heightSize, widthSize));
 
-        for (int i = 0; i < verticalSize; i++) {
-            for (int j = 0; j < horizontalSize; j++) {
-                var cellPanel = new CellPanel(game, i, j);
-                cellPanel.addMouseListener(new CellClickListener(game, i, j));
+        for (int i = 0; i < widthSize; i++) {
+            for (int j = 0; j < heightSize; j++) {
+                var position = new Position(i, j);
+                var cellPanel = new CellPanel(game, position);
+                cellPanel.addMouseListener(new CellClickListener(game, position));
                 add(cellPanel);
                 cellPanels[i][j] = cellPanel;
             }
         }
     }
 
-    void updateCell(int vertical, int horizontal) {
-        cellPanels[vertical][horizontal].update();
+    void updateCell(Position position) {
+        cellPanels[position.getWidth()][position.getHeight()].update();
     }
 
     void updateAllCells() {

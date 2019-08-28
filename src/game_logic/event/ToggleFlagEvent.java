@@ -1,19 +1,15 @@
 package game_logic.event;
 
+import game_logic.Position;
+
 public class ToggleFlagEvent {
-    private final int vertical;
-    private final int horizontal;
+    private final Position position;
 
-    public ToggleFlagEvent(int vertical, int horizontal) {
-        this.vertical = vertical;
-        this.horizontal = horizontal;
+    public ToggleFlagEvent(Position position) {
+        this.position = position;
     }
 
-    public int getVertical() {
-        return vertical;
-    }
-
-    public int getHorizontal() {
-        return horizontal;
+    public Position getPosition() {
+        return position;
     }
 }

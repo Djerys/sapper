@@ -5,7 +5,7 @@ import game_logic.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Game {
+public class Game {
     private GameState state;
     private GameField field;
     private GameDifficulty difficulty;
@@ -25,41 +25,45 @@ public final class Game {
         return difficulty;
     }
 
-    public int getVerticalSize() {
-        return difficulty.getVerticalSize();
+    public int getHeightSize() {
+        return difficulty.getHeightSize();
     }
 
-    public int getHorizontalSize() {
-        return difficulty.getHorizontalSize();
+    public int getWidthSize() {
+        return difficulty.getWidthSize();
     }
 
     public int getUnusedFlagsCount() {
         return field.getUnusedFlagsCount();
     }
 
-    public boolean isRevealed(int vertical, int horizontal) {
-        return field.isRevealed(vertical, horizontal);
+    public GameState getState() {
+        return state;
     }
 
-    public boolean hasMine(int vertical, int horizontal) {
-        return field.hasMine(vertical, horizontal);
+    public boolean isRevealed(Position position) {
+        return field.isRevealed(position);
     }
 
-    public boolean hasFlag(int vertical, int horizontal) {
-        return field.hasFlag(vertical, horizontal);
+    public boolean hasMine(Position position) {
+        return field.hasMine(position);
     }
 
-    public int nearMinesCount(int vertical, int horizontal) {
-        return field.nearMinesCount(vertical, horizontal);
+    public boolean hasFlag(Position position) {
+        return field.hasFlag(position);
+    }
+
+    public int nearMinesCount(Position position) {
+        return field.nearMinesCount(position);
     }
 
     public boolean isEnd() {
         return state == GameState.WIN || state == GameState.LOSS;
     }
 
-    public void reveal(int vertical, int horizontal) {
+    public void reveal(Position position) {
         state = GameState.GOING;
-        field.reveal(vertical, horizontal);
+        field.reveal(position);
         if (field.isBlown()) {
             state = GameState.LOSS;
         } else if (field.isClear()) {
@@ -68,12 +72,12 @@ public final class Game {
         fireRevealed(new RevealEvent());
     }
 
-    public void toggleFlag(int vertical, int horizontal) {
-        var wasPut = field.putFlag(vertical, horizontal);
+    public void toggleFlag(Position position) {
+        var wasPut = field.putFlag(position);
         if (!wasPut) {
-            field.removeFlag(vertical, horizontal);
+            field.removeFlag(position);
         }
-        fireFlagToggled(new ToggleFlagEvent(vertical, horizontal));
+        fireFlagToggled(new ToggleFlagEvent(position));
     }
 
     public void restart(GameDifficulty difficulty) {
