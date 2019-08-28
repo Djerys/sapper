@@ -1,9 +1,6 @@
 package game_logic;
 
-import game_logic.event.CellEvent;
-import game_logic.event.CellListener;
-import game_logic.event.FewCellsEvent;
-import game_logic.event.FewCellsListener;
+import game_logic.event.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,8 +9,9 @@ public final class Game {
     private GameState state;
     private GameField field;
     private GameDifficulty difficulty;
-    private List<CellListener> cellChangeListeners  = new ArrayList<>();
-    private List<FewCellsListener> fewCellsChangeListeners = new ArrayList<>();
+    private List<ToggleFlagListener> toggleFlagListeners = new ArrayList<>();
+    private List<RevealListener> revealListeners = new ArrayList<>();
+    private List<EndListener> endListeners = new ArrayList<>();
 
     public Game() {
         restart(GameDifficulty.INTERMEDIATE);
@@ -21,10 +19,6 @@ public final class Game {
 
     public Game(GameDifficulty difficulty) {
         restart(difficulty);
-    }
-
-    public GameState getState() {
-        return state;
     }
 
     private GameDifficulty getDifficulty() {
@@ -59,6 +53,10 @@ public final class Game {
         return field.nearMinesCount(vertical, horizontal);
     }
 
+    public boolean isEnd() {
+        return state == GameState.WIN || state == GameState.LOSS;
+    }
+
     public void reveal(int vertical, int horizontal) {
         state = GameState.GOING;
         field.reveal(vertical, horizontal);
@@ -67,7 +65,7 @@ public final class Game {
         } else if (field.isClear()) {
             state = GameState.WIN;
         }
-        fireFewCellsChanged(new FewCellsEvent());
+        fireRevealed(new RevealEvent());
     }
 
     public void toggleFlag(int vertical, int horizontal) {
@@ -75,7 +73,7 @@ public final class Game {
         if (!wasPut) {
             field.removeFlag(vertical, horizontal);
         }
-        fireCellChanged(new CellEvent(vertical, horizontal));
+        fireFlagToggled(new ToggleFlagEvent(vertical, horizontal));
     }
 
     public void restart(GameDifficulty difficulty) {
@@ -84,7 +82,7 @@ public final class Game {
         state = GameState.READY;
     }
 
-    public void finish() {
+    public void end() {
         switch (state) {
             case WIN:
                 field.revealAllCells();
@@ -92,37 +90,48 @@ public final class Game {
             case LOSS:
                 field.revealNotFlaggedMines();
         }
+        fireRevealed(new RevealEvent());
     }
 
-    public void addCellListener(CellListener listener) {
-        cellChangeListeners.add(listener);
+    public void addToggleFlagListener(ToggleFlagListener listener) {
+        toggleFlagListeners.add(listener);
     }
 
-    public void removeCellListener(CellListener listener) {
-        cellChangeListeners.remove(listener);
+    public void removeToggleFlagListener(ToggleFlagListener listener) {
+        toggleFlagListeners.remove(listener);
     }
 
-    public void addFewCellsListener(FewCellsListener listener) {
-        fewCellsChangeListeners.add(listener);
+    public void addRevealListener(RevealListener listener) {
+        revealListeners.add(listener);
     }
 
-    public void removeFewCellsListener(FewCellsListener listener) {
-        fewCellsChangeListeners.remove(listener);
+    public void removeRevealListener(RevealListener listener) {
+        revealListeners.remove(listener);
     }
 
-    private void fireCellChanged(CellEvent event) {
-        for (var listener : cellChangeListeners) {
-            listener.cellChanged(event);
+    public void addEndListener(EndListener listener) {
+        endListeners.add(listener);
+    }
+
+    public void removeEndListener(EndListener listener) {
+        endListeners.remove(listener);
+    }
+
+    private void fireFlagToggled(ToggleFlagEvent event) {
+        for (var listener : toggleFlagListeners) {
+            listener.flagToggled(event);
         }
     }
 
-    private void fireFewCellsChanged(FewCellsEvent event) {
-        for (var listener : fewCellsChangeListeners) {
-            listener.fewCellsChanged(event);
+    private void fireRevealed(RevealEvent event) {
+        for (var listener : revealListeners) {
+            listener.revealed(event);
         }
     }
 
-    public void printField() {
-        field.print();
+    private void fireEnded(EndEvent event) {
+        for (var listener : endListeners) {
+            listener.ended(event);
+        }
     }
 }

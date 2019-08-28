@@ -15,13 +15,4 @@ class Cell implements Cloneable {
                 ", nearMinesCount=" + nearMinesCount +
                 '}';
     }
-
-    @Override
-    public Cell clone() {
-        try {
-            return (Cell) super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new AssertionError();
-        }
-    }
 }

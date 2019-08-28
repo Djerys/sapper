@@ -1,6 +1,5 @@
 package game_logic;
 
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 
@@ -48,10 +47,6 @@ final class GameField {
 
     int nearMinesCount(int vertical, int horizontal) {
         return space[vertical][horizontal].nearMinesCount;
-    }
-
-    Cell getCell(int vertical, int horizontal) {
-        return space[vertical][horizontal].clone();
     }
 
     int getUnusedFlagsCount() {
@@ -108,26 +103,7 @@ final class GameField {
         }
         cell.hasFlag = false;
         unusedFlagsCount++;
-        return false;
-    }
-
-    void print() {
-        for (var row : space) {
-            for (var cell : row) {
-                if (cell.hasFlag) {
-                    System.out.print("| ");
-                } else if (!cell.isRevealed) {
-                    System.out.print("# ");
-                } else if (cell.hasMine) {
-                    System.out.print("* ");
-                } else if (cell.nearMinesCount != 0) {
-                    System.out.print(cell.nearMinesCount + " ");
-                } else {
-                    System.out.print("- ");
-                }
-            }
-            System.out.println();
-        }
+        return true;
     }
 
     private void initializeSpace() {

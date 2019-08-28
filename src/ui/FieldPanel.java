@@ -30,6 +30,9 @@ public class FieldPanel extends JPanel {
             } else if (e.getButton() == MouseEvent.BUTTON3) {
                 game.toggleFlag(vertical, horizontal);
             }
+            if (game.isEnd()) {
+                game.end();
+            }
         }
     }
 

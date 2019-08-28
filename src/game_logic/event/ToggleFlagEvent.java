@@ -1,10 +1,10 @@
 package game_logic.event;
 
-public class CellEvent {
+public class ToggleFlagEvent {
     private final int vertical;
     private final int horizontal;
 
-    public CellEvent(int vertical, int horizontal) {
+    public ToggleFlagEvent(int vertical, int horizontal) {
         this.vertical = vertical;
         this.horizontal = horizontal;
     }
