@@ -112,6 +112,7 @@ final class GameField {
         cell.isRevealed = true;
         openCleanCellsCount++;
         if (cell.nearMinesCount != 0) return;
+
         for (int wOffset = -1; wOffset <= 1; wOffset++) {
             for (int hOffset = -1; hOffset <= 1; hOffset++) {
                 innerReveal(width + wOffset, height + hOffset);
@@ -130,9 +131,9 @@ final class GameField {
         while (i < minesCount) {
             int width = random.nextInt(widthSize);
             int height = random.nextInt(heightSize);
-            var position = new Position(width, height);
-            var cell = cells.get(position);
-            if (!cell.hasMine && !nonMinePosition.isNeighbourOf(position)) {
+            var randomPosition = new Position(width, height);
+            var cell = cells.get(randomPosition);
+            if (!cell.hasMine && !nonMinePosition.isNeighbourOf(randomPosition)) {
                 cell.hasMine = true;
                 i++;
             }
@@ -142,24 +143,26 @@ final class GameField {
     private void calculateNearMines() {
         for (int i = 0; i < widthSize; i++) {
             for (int j = 0; j < heightSize; j++) {
-                calculateNearMinesOfCell(i, j);
+                calculateNearMinesOfCell(new Position(i, j));
             }
         }
     }
 
-    private void calculateNearMinesOfCell(int width, int height) {
+    private void calculateNearMinesOfCell(Position position) {
         for (int wOffset = -1; wOffset <= 1; wOffset++) {
             for (int hOffset = -1; hOffset <= 1; hOffset++) {
-                if (!isOutOfBounds(width + wOffset, height + hOffset)) {
-                    var nearCell = cells.get(new Position(width + wOffset, height + hOffset));
-                    cells.get(new Position(width, height)).nearMinesCount += nearCell.hasMine ? 1 : 0;
+                int nearWidth = position.getWidth() + wOffset;
+                int nearHeight = position.getHeight() + hOffset;
+                if (!isOutOfBounds(nearWidth, nearHeight)) {
+                    var nearCell = cells.get(new Position(nearWidth, nearHeight));
+                    cells.get(position).nearMinesCount += nearCell.hasMine ? 1 : 0;
                 }
             }
         }
     }
 
     private boolean isOutOfBounds(int width, int height) {
-        return width < 0 || height < 0
-                || width >= widthSize || height >= heightSize;
+        return width < 0 || height < 0 ||
+                width >= widthSize || height >= heightSize;
     }
 }

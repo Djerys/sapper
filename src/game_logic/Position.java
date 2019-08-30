@@ -9,7 +9,8 @@ public final class Position {
 
     public Position(int width, int height) {
         if (width < 0 || height < 0) {
-            throw new IllegalArgumentException("Width and height be positive.");
+            throw new IllegalArgumentException(
+                    "Width and height must be positive.");
         }
         this.height = height;
         this.width = width;
@@ -26,10 +27,6 @@ public final class Position {
     boolean isNeighbourOf(Position other) {
         return dimensionRange(width).contains(other.width) &&
                 dimensionRange(height).contains(other.height);
-    }
-
-    private Set<Integer> dimensionRange(int dimension) {
-        return Set.of(dimension - 1, dimension, dimension + 1);
     }
 
     @Override
@@ -52,5 +49,9 @@ public final class Position {
                 "width=" + width +
                 ", height=" + height +
                 '}';
+    }
+
+    private Set<Integer> dimensionRange(int dimension) {
+        return Set.of(dimension - 1, dimension, dimension + 1);
     }
 }

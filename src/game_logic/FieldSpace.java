@@ -1,5 +1,7 @@
 package game_logic;
 
+import java.util.Arrays;
+
 final class FieldSpace {
     private final Cell[][] space;
 
@@ -14,5 +16,10 @@ final class FieldSpace {
 
     Cell get(Position position) {
         return space[position.getHeight()][position.getWidth()];
+    }
+
+    @Override
+    public String toString() {
+        return Arrays.toString(space);
     }
 }
