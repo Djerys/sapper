@@ -9,8 +9,7 @@ public class Game {
     private GameState state;
     private GameField field;
     private GameDifficulty difficulty;
-    private List<ToggleFlagListener> toggleFlagListeners = new ArrayList<>();
-    private List<RevealListener> revealListeners = new ArrayList<>();
+    private List<FieldListener> fieldListeners = new ArrayList<>();
     private List<EndListener> endListeners = new ArrayList<>();
 
     public Game() {
@@ -69,7 +68,7 @@ public class Game {
         } else if (field.isClear()) {
             state = GameState.WIN;
         }
-        fireRevealed(new RevealEvent());
+        fireFieldChanged();
     }
 
     public void toggleFlag(Position position) {
@@ -77,7 +76,7 @@ public class Game {
         if (!wasPut) {
             field.removeFlag(position);
         }
-        fireFlagToggled(new ToggleFlagEvent(position));
+        fireFieldChanged();
     }
 
     public void restart(GameDifficulty difficulty) {
@@ -94,23 +93,15 @@ public class Game {
             case LOSS:
                 field.revealNotFlaggedMines();
         }
-        fireRevealed(new RevealEvent());
+        fireEnded();
     }
 
-    public void addToggleFlagListener(ToggleFlagListener listener) {
-        toggleFlagListeners.add(listener);
+    public void addFieldListener(FieldListener listener) {
+        fieldListeners.add(listener);
     }
 
-    public void removeToggleFlagListener(ToggleFlagListener listener) {
-        toggleFlagListeners.remove(listener);
-    }
-
-    public void addRevealListener(RevealListener listener) {
-        revealListeners.add(listener);
-    }
-
-    public void removeRevealListener(RevealListener listener) {
-        revealListeners.remove(listener);
+    public void removeFieldListener(FieldListener listener) {
+        fieldListeners.remove(listener);
     }
 
     public void addEndListener(EndListener listener) {
@@ -121,21 +112,15 @@ public class Game {
         endListeners.remove(listener);
     }
 
-    private void fireFlagToggled(ToggleFlagEvent event) {
-        for (var listener : toggleFlagListeners) {
-            listener.flagToggled(event);
+    private void fireFieldChanged() {
+        for (var listener : fieldListeners) {
+            listener.fieldChanged();
         }
     }
 
-    private void fireRevealed(RevealEvent event) {
-        for (var listener : revealListeners) {
-            listener.revealed(event);
-        }
-    }
-
-    private void fireEnded(EndEvent event) {
+    private void fireEnded() {
         for (var listener : endListeners) {
-            listener.ended(event);
+            listener.ended();
         }
     }
 }

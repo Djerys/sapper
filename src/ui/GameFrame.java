@@ -2,7 +2,6 @@ package ui;
 
 import game_logic.Game;
 import game_logic.GameDifficulty;
-import game_logic.Position;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,9 +15,8 @@ public class GameFrame extends JFrame {
         this.game = game;
         fieldPanel = new FieldPanel(game);
         statePanel = new GameStatePanel(game);
-        game.addToggleFlagListener(e -> fieldPanel.updateCell(e.getPosition()));
-        game.addRevealListener(e -> fieldPanel.updateAllCells());
-        game.addEndListener(e -> fieldPanel.updateAllCells());
+        game.addFieldListener(fieldPanel::updateAllCells);
+        game.addEndListener(fieldPanel::updateAllCells);
         setSize(new Dimension(400, 400));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         add(fieldPanel);
