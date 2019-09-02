@@ -11,17 +11,34 @@ import java.awt.event.MouseEvent;
 public class FieldPanel extends JPanel {
     private final Game game;
     private final Image countImages[] = new Image[9];
+    private final Image closedImage = new ImageIcon("img/closed_cell.png").getImage();
+    private final Image mineImage = new ImageIcon("img/mine_cell.png").getImage();
+
+    private static final int CELL_SIZE = 30;
 
     private static class MinesListener extends MouseAdapter {
+        private final Game game;
+        private final FieldPanel panel;
+
+        MinesListener(Game game, FieldPanel panel) {
+            this.game = game;
+            this.panel = panel;
+        }
+
         @Override
         public void mouseClicked(MouseEvent e) {
-            super.mouseClicked(e);
+            int width = e.getX() / CELL_SIZE;
+            int height = e.getY() / CELL_SIZE;
+
+            game.reveal(new Position(width, height));
+            panel.repaint();
         }
     }
 
     public FieldPanel(Game game) {
         this.game = game;
         initImages();
+        addMouseListener(new MinesListener(game, this));
     }
 
     private void initImages() {
@@ -35,7 +52,16 @@ public class FieldPanel extends JPanel {
     protected void paintComponent(Graphics g) {
         for (int i = 0; i < game.getWidthSize(); i++) {
             for (int j = 0; j < game.getHeightSize(); j++) {
-                g.drawImage(countImages[0], i * 30, j * 30, this);
+                var position = new Position(i, j);
+                Image imageToDraw = null;
+                if (!game.isRevealed(position)) {
+                    imageToDraw = closedImage;
+                } else if (game.hasMine(position)) {
+                    imageToDraw = mineImage;
+                } else {
+                    imageToDraw = countImages[game.nearMinesCount(position)];
+                }
+                g.drawImage(imageToDraw, i * CELL_SIZE, j * CELL_SIZE, this);
             }
         }
     }
