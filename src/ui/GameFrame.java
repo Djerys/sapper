@@ -15,8 +15,6 @@ public class GameFrame extends JFrame {
         this.game = game;
         fieldPanel = new FieldPanel(game);
         statePanel = new GameStatePanel(game);
-        game.addFieldListener(fieldPanel::updateAllCells);
-        game.addEndListener(fieldPanel::updateAllCells);
         setSize(new Dimension(350, 350));
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         add(fieldPanel);
