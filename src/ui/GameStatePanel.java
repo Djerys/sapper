@@ -1,7 +1,6 @@
 package ui;
 
 import game_logic.Game;
-import game_logic.GameState;
 
 import javax.swing.*;
 import java.awt.*;
