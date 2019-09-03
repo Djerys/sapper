@@ -1,4 +1,4 @@
-package ui;
+package ui.gui;
 
 import game_logic.Game;
 import game_logic.Position;
@@ -37,7 +37,6 @@ public class FieldPanel extends JPanel {
             } else if (e.getButton() == MouseEvent.BUTTON3) {
                 game.toggleFlag(position);
             }
-            panel.repaint();
         }
     }
 
@@ -45,7 +44,7 @@ public class FieldPanel extends JPanel {
         this.game = game;
         initImages();
         addMouseListener(new MinesListener(game, this));
-        setPreferredSize(new Dimension(game.getWidthSize() * 30, game.getHeightSize() * 30));
+        setPreferredSize(new Dimension(game.getWidthSize() * CELL_SIZE, game.getHeightSize() * CELL_SIZE));
     }
 
     private void initImages() {

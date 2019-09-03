@@ -1,15 +1,15 @@
 package game_logic;
 
-public enum GameDifficulty {
+public enum Difficulty {
     BEGINNER(9, 9, 10), 
     INTERMEDIATE(16, 16, 40),
-    PROFESSIONAL(16, 30, 99);
+    PROFESSIONAL(30, 16, 99);
 
     private final int heightSize;
     private final int widthSize;
     private final int minesCount;
 
-    GameDifficulty(int widthSize, int heightSize, int minesCount) {
+    Difficulty(int widthSize, int heightSize, int minesCount) {
         this.widthSize = widthSize;
         this.heightSize = heightSize;
         this.minesCount = minesCount;

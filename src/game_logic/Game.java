@@ -6,21 +6,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private GameState state;
-    private GameField field;
-    private GameDifficulty difficulty;
+    private Board field;
+    private Difficulty difficulty;
+    private GameState state = GameState.READY;
     private List<FieldListener> fieldListeners = new ArrayList<>();
     private List<EndListener> endListeners = new ArrayList<>();
 
     public Game() {
-        restart(GameDifficulty.INTERMEDIATE);
+        restart(Difficulty.INTERMEDIATE);
     }
 
-    public Game(GameDifficulty difficulty) {
+    public Game(Difficulty difficulty) {
         restart(difficulty);
     }
 
-    private GameDifficulty getDifficulty() {
+    private Difficulty getDifficulty() {
         return difficulty;
     }
 
@@ -61,14 +61,20 @@ public class Game {
     }
 
     public void reveal(Position position) {
-        state = GameState.GOING;
-        field.reveal(position);
-        if (field.isBlown()) {
-            state = GameState.LOSS;
-        } else if (field.isClear()) {
-            state = GameState.WIN;
+//        state = GameState.GOING;
+//        field.reveal(position);
+//        if (field.isBlown()) {
+//            state = GameState.LOSS;
+//        } else if (field.isClear()) {
+//            state = GameState.WIN;
+//        }
+//        fireFieldChanged();
+
+        if (field.reveal(position)) {
+            fireFieldChanged();
+            state = GameState.GOING;
         }
-        fireFieldChanged();
+        tryToEnd();
     }
 
     public void toggleFlag(Position position) {
@@ -79,20 +85,21 @@ public class Game {
         fireFieldChanged();
     }
 
-    public void restart(GameDifficulty difficulty) {
+    public void restart(Difficulty difficulty) {
         this.difficulty = difficulty;
-        field = new GameField(difficulty);
+        field = new Board(difficulty);
         state = GameState.READY;
     }
 
-    public void end() {
-        switch (state) {
-            case WIN:
-                field.revealAllCells();
-                break;
-            case LOSS:
-                field.revealNotFlaggedMines();
-        }
+    public void tryToEnd() {
+        if (field.isClear()) {
+            state = GameState.WIN;
+            field.revealAllCells();
+        } else if (field.isBlown()) {
+            state = GameState.LOSS;
+            field.revealNotFlaggedMines();
+        } else return;
+        fireFieldChanged();
         fireEnded();
     }
 

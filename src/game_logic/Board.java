@@ -2,7 +2,7 @@ package game_logic;
 
 import java.util.Random;
 
-final class GameField {
+final class Board {
     private int unusedFlagsCount;
     private boolean blown = false;
     private int openCleanCellsCount = 0;
@@ -13,7 +13,7 @@ final class GameField {
     private final int spaceSize;
     private final int minesCount;
 
-    GameField(GameDifficulty difficulty) {
+    Board(Difficulty difficulty) {
         this.widthSize = difficulty.getWidthSize();
         this.heightSize = difficulty.getHeightSize();
         this.spaceSize = heightSize * widthSize;
@@ -71,10 +71,10 @@ final class GameField {
         }
     }
 
-    void reveal(Position position) {
+    boolean reveal(Position position) {
         var cell = cells.get(position);
-        if (blown) {
-            return;
+        if (blown || cell.isRevealed || cell.hasFlag) {
+            return false;
         }
         if (openCleanCellsCount == 0) {
             setupMines(position);
@@ -83,11 +83,12 @@ final class GameField {
             blown = true;
         }
         innerReveal(position.getWidth(), position.getHeight());
+        return true;
     }
 
     boolean putFlag(Position position) {
         var cell = cells.get(position);
-        if (cell.isRevealed || cell.hasFlag || unusedFlagsCount == 0) {
+        if (blown || cell.isRevealed || cell.hasFlag || unusedFlagsCount == 0) {
             return false;
         }
         cell.hasFlag = true;
@@ -97,7 +98,7 @@ final class GameField {
 
     boolean removeFlag(Position position) {
         var cell = cells.get(position);
-        if (cell.isRevealed || !cell.hasFlag) {
+        if (blown || cell.isRevealed || !cell.hasFlag) {
             return false;
         }
         cell.hasFlag = false;

@@ -1,4 +1,4 @@
-package ui;
+package ui.gui;
 
 import game_logic.Game;
 
