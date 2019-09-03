@@ -12,7 +12,6 @@ public class GameStatePanel extends JPanel {
     GameStatePanel(Game game) {
         this.game = game;
         add(label);
-        setBorder(BorderFactory.createLoweredBevelBorder());
         setLayout(new FlowLayout());
         update();
     }

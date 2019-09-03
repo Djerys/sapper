@@ -56,20 +56,7 @@ public class Game {
         return field.nearMinesCount(position);
     }
 
-    public boolean isEnd() {
-        return state == GameState.WIN || state == GameState.LOSS;
-    }
-
     public void reveal(Position position) {
-//        state = GameState.GOING;
-//        field.reveal(position);
-//        if (field.isBlown()) {
-//            state = GameState.LOSS;
-//        } else if (field.isClear()) {
-//            state = GameState.WIN;
-//        }
-//        fireFieldChanged();
-
         if (field.reveal(position)) {
             fireFieldChanged();
             state = GameState.GOING;
@@ -78,29 +65,15 @@ public class Game {
     }
 
     public void toggleFlag(Position position) {
-        var wasPut = field.putFlag(position);
-        if (!wasPut) {
-            field.removeFlag(position);
+        if (field.putFlag(position) || field.removeFlag(position)) {
+            fireFieldChanged();
         }
-        fireFieldChanged();
     }
 
     public void restart(Difficulty difficulty) {
         this.difficulty = difficulty;
         field = new Board(difficulty);
         state = GameState.READY;
-    }
-
-    public void tryToEnd() {
-        if (field.isClear()) {
-            state = GameState.WIN;
-            field.revealAllCells();
-        } else if (field.isBlown()) {
-            state = GameState.LOSS;
-            field.revealNotFlaggedMines();
-        } else return;
-        fireFieldChanged();
-        fireEnded();
     }
 
     public void addFieldListener(FieldListener listener) {
@@ -117,6 +90,18 @@ public class Game {
 
     public void removeEndListener(EndListener listener) {
         endListeners.remove(listener);
+    }
+
+    private void tryToEnd() {
+        if (field.isClear()) {
+            state = GameState.WIN;
+            field.revealAllCells();
+        } else if (field.isBlown()) {
+            state = GameState.LOSS;
+            field.revealNotFlaggedMines();
+        } else return;
+        fireFieldChanged();
+        fireEnded();
     }
 
     private void fireFieldChanged() {

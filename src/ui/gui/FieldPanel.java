@@ -17,34 +17,11 @@ public class FieldPanel extends JPanel {
 
     private static final int CELL_SIZE = 30;
 
-    private static class MinesListener extends MouseAdapter {
-        private final Game game;
-        private final FieldPanel panel;
-
-        MinesListener(Game game, FieldPanel panel) {
-            this.game = game;
-            this.panel = panel;
-        }
-
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            int width = e.getX() / CELL_SIZE;
-            int height = e.getY() / CELL_SIZE;
-            var position = new Position(width, height);
-
-            if (e.getButton() == MouseEvent.BUTTON1) {
-                game.reveal(position);
-            } else if (e.getButton() == MouseEvent.BUTTON3) {
-                game.toggleFlag(position);
-            }
-        }
-    }
-
     public FieldPanel(Game game) {
         this.game = game;
         initImages();
-        addMouseListener(new MinesListener(game, this));
-        setPreferredSize(new Dimension(game.getWidthSize() * CELL_SIZE, game.getHeightSize() * CELL_SIZE));
+        setPreferredSize(new Dimension(game.getWidthSize() * CELL_SIZE,
+                game.getHeightSize() * CELL_SIZE));
     }
 
     private void initImages() {
@@ -59,7 +36,7 @@ public class FieldPanel extends JPanel {
         for (int i = 0; i < game.getWidthSize(); i++) {
             for (int j = 0; j < game.getHeightSize(); j++) {
                 var position = new Position(i, j);
-                Image imageToDraw = null;
+                Image imageToDraw;
                 if (game.hasFlag(position)) {
                     imageToDraw = flagImage;
                 } else if (!game.isRevealed(position)) {
