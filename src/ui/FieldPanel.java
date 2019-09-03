@@ -13,6 +13,7 @@ public class FieldPanel extends JPanel {
     private final Image countImages[] = new Image[9];
     private final Image closedImage = new ImageIcon("img/closed_cell.png").getImage();
     private final Image mineImage = new ImageIcon("img/mine_cell.png").getImage();
+    private final Image flagImage = new ImageIcon("img/flag_cell.png").getImage();
 
     private static final int CELL_SIZE = 30;
 
@@ -29,8 +30,13 @@ public class FieldPanel extends JPanel {
         public void mouseClicked(MouseEvent e) {
             int width = e.getX() / CELL_SIZE;
             int height = e.getY() / CELL_SIZE;
+            var position = new Position(width, height);
 
-            game.reveal(new Position(width, height));
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                game.reveal(position);
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+                game.toggleFlag(position);
+            }
             panel.repaint();
         }
     }
@@ -39,6 +45,7 @@ public class FieldPanel extends JPanel {
         this.game = game;
         initImages();
         addMouseListener(new MinesListener(game, this));
+        setPreferredSize(new Dimension(game.getWidthSize() * 30, game.getHeightSize() * 30));
     }
 
     private void initImages() {
@@ -54,7 +61,9 @@ public class FieldPanel extends JPanel {
             for (int j = 0; j < game.getHeightSize(); j++) {
                 var position = new Position(i, j);
                 Image imageToDraw = null;
-                if (!game.isRevealed(position)) {
+                if (game.hasFlag(position)) {
+                    imageToDraw = flagImage;
+                } else if (!game.isRevealed(position)) {
                     imageToDraw = closedImage;
                 } else if (game.hasMine(position)) {
                     imageToDraw = mineImage;

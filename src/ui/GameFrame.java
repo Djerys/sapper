@@ -15,15 +15,17 @@ public class GameFrame extends JFrame {
         this.game = game;
         fieldPanel = new FieldPanel(game);
         statePanel = new GameStatePanel(game);
-        setSize(new Dimension(350, 350));
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
         add(fieldPanel);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setResizable(false);
+        pack();
+
         setTitle("MineSweeper");
         setVisible(true);
         setLocation(new Point(400, 350));
     }
 
     public static void main(String[] args) {
-        var frame = new GameFrame(new Game(GameDifficulty.BEGINNER));
+        var frame = new GameFrame(new Game(GameDifficulty.INTERMEDIATE));
     }
 }
