@@ -12,6 +12,7 @@ class GameStatePanel extends JPanel {
     GameStatePanel(Game game) {
         this.game = game;
         label = new JLabel(game.getState().toString());
+        label.setFont(new Font("Consolas", Font.BOLD, 18));
         add(label);
     }
 

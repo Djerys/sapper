@@ -18,6 +18,9 @@ public class GameClient implements GameUI {
 
     @Override
     public void start() {
+        frame.setIconImage(new ImageIcon("img/mine_cell.png").getImage());
+        frame.setTitle("Minesweeper");
+
         JMenuBar menuBar = new GameMenuBar(game);
         frame.setJMenuBar(menuBar);
 

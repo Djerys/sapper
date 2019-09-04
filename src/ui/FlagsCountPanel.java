@@ -12,6 +12,7 @@ public class FlagsCountPanel extends JPanel {
     FlagsCountPanel(Game game) {
         this.game = game;
         label = new JLabel(Integer.toString(game.getUnusedFlagsCount()));
+        label.setFont(new Font("Consolas", Font.BOLD, 18));
         add(label);
     }
 
