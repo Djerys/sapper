@@ -1,29 +1,29 @@
 package game_logic;
 
-public enum Difficulty {
-    BEGINNER(9, 9, 10), 
-    INTERMEDIATE(16, 16, 40),
-    HARD(30, 16, 99);
+public final class Difficulty {
+    public static final Difficulty EASY = new Difficulty(9, 9, 10);
+    public static final Difficulty INTERMEDIATE = new Difficulty(16, 16, 40);
+    public static final Difficulty HARD = new Difficulty(30, 16, 99);
 
     private final int heightSize;
     private final int widthSize;
     private final int minesCount;
 
-    Difficulty(int widthSize, int heightSize, int minesCount) {
+    public Difficulty(int widthSize, int heightSize, int minesCount) {
         this.widthSize = widthSize;
         this.heightSize = heightSize;
         this.minesCount = minesCount;
     }
 
-    public int getWidthSize() {
+    int getWidthSize() {
         return widthSize;
     }
 
-    public int getHeightSize() {
+    int getHeightSize() {
         return heightSize;
     }
 
-    public int getMinesCount() {
+    int getMinesCount() {
         return minesCount;
     }
 

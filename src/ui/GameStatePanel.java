@@ -1,20 +1,21 @@
 package ui;
 
-import controller.GameController;
+import game_logic.Game;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class GameStatePanel extends JPanel {
-    private final GameController controller;
+class GameStatePanel extends JPanel {
+    private final Game game;
     private final JLabel label;
 
-    public GameStatePanel(GameController controller) {
-        this.controller = controller;
-        label = new JLabel(controller.getGame().getState().toString());
+    GameStatePanel(Game game) {
+        this.game = game;
+        label = new JLabel(game.getState().toString());
         add(label);
-        setBorder(BorderFactory.createLoweredBevelBorder());
+    }
 
-        setLayout(new FlowLayout());
+    void update() {
+        label.setText(game.getState().toString());
     }
 }

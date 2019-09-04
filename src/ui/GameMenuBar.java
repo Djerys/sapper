@@ -1,13 +1,13 @@
 package ui;
 
-import controller.GameController;
 import game_logic.Difficulty;
+import game_logic.Game;
 
 import javax.swing.*;
 
 
-public class GameMenuBar extends JMenuBar {
-    public GameMenuBar(GameController controller) {
+class GameMenuBar extends JMenuBar {
+    GameMenuBar(Game game) {
         JMenu menu;
         JMenuItem menuItem;
         JRadioButtonMenuItem rbMenuItem;
@@ -16,7 +16,7 @@ public class GameMenuBar extends JMenuBar {
         add(menu);
 
         menuItem = new JMenuItem("New");
-        menuItem.addActionListener(e -> controller.getGame().restart());
+        menuItem.addActionListener(e -> game.restart());
         menu.add(menuItem);
 
         menu.addSeparator();
@@ -24,20 +24,32 @@ public class GameMenuBar extends JMenuBar {
         ButtonGroup group = new ButtonGroup();
 
         rbMenuItem = new JRadioButtonMenuItem("Easy");
-        rbMenuItem.addActionListener(e -> controller.getGame().restart(Difficulty.BEGINNER));
+        rbMenuItem.addActionListener(e -> game.restart(Difficulty.EASY));
         group.add(rbMenuItem);
         menu.add(rbMenuItem);
 
         rbMenuItem = new JRadioButtonMenuItem("Intermediate");
-        rbMenuItem.addActionListener(e -> controller.getGame().restart(Difficulty.INTERMEDIATE));
+        rbMenuItem.addActionListener(e -> game.restart(Difficulty.INTERMEDIATE));
         group.add(rbMenuItem);
         menu.add(rbMenuItem);
 
         rbMenuItem = new JRadioButtonMenuItem("Hard");
-        rbMenuItem.addActionListener(e -> controller.getGame().restart(Difficulty.HARD));
+        rbMenuItem.addActionListener(e -> game.restart(Difficulty.HARD));
         group.add(rbMenuItem);
         menu.add(rbMenuItem);
 
+        rbMenuItem = new JRadioButtonMenuItem("Custom...");
+        rbMenuItem.addActionListener(e1 -> {
+            SelectDialogPanel dialogPanel = new SelectDialogPanel();
+            int option = JOptionPane.showOptionDialog(this, dialogPanel, "Custom Board",
+                    JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+            if (option == JOptionPane.OK_OPTION) {
+                game.restart(new Difficulty(dialogPanel.getSelectedWidth(), dialogPanel.getSelectedHeight(),
+                        dialogPanel.getSelectedMines()));
+            }
+        });
+        group.add(rbMenuItem);
+        menu.add(rbMenuItem);
         group.add(rbMenuItem);
         menu.add(rbMenuItem);
     }

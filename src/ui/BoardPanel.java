@@ -5,25 +5,42 @@ import game_logic.Position;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-public class BoardPanel extends JPanel {
+class BoardPanel extends JPanel {
     private final Game game;
-    private final Image countImages[] = new Image[9];
+    private final Image[] countImages = new Image[9];
     private final Image closedImage = new ImageIcon("img/closed_cell.png").getImage();
     private final Image mineImage = new ImageIcon("img/mine_cell.png").getImage();
     private final Image flagImage = new ImageIcon("img/flag_cell.png").getImage();
-    private final int cellSize = 30;
+    private final static int CELL_SIZE = 30;
 
-    public BoardPanel(Game game) {
-        this.game = game;
-        initializeCountImages();
-        var width = game.getWidthSize() * cellSize;
-        var height = game.getHeightSize() * cellSize;
-        setPreferredSize(new Dimension(width, height));
+    private class BoardClickListener extends MouseAdapter {
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            int width = e.getX() / CELL_SIZE;
+            int height = e.getY() / CELL_SIZE;
+            var position = new Position(width, height);
+            if (e.getButton() == MouseEvent.BUTTON1) {
+                game.reveal(position);
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+                game.toggleFlag(position);
+            }
+        }
     }
 
-    public int getCellSize() {
-        return cellSize;
+    BoardPanel(Game game) {
+        this.game = game;
+        initializeCountImages();
+        update();
+        addMouseListener(new BoardClickListener());;
+    }
+
+    void update() {
+        int width = game.getWidthSize() * CELL_SIZE;
+        int height = game.getHeightSize() * CELL_SIZE;
+        setPreferredSize(new Dimension(width, height));
     }
 
     @Override
@@ -41,7 +58,7 @@ public class BoardPanel extends JPanel {
                 } else {
                     imageToDraw = countImages[game.nearMinesCount(position)];
                 }
-                g.drawImage(imageToDraw, i * cellSize, j * cellSize, this);
+                g.drawImage(imageToDraw, i * CELL_SIZE, j * CELL_SIZE, this);
             }
         }
     }

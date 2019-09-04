@@ -9,7 +9,7 @@ public class Game {
     private Board board;
     private Difficulty difficulty;
     private GameState state = GameState.READY;
-    private List<BoardListener> fieldListeners = new ArrayList<>();
+    private List<BoardListener> boardListeners = new ArrayList<>();
     private List<EndListener> endListeners = new ArrayList<>();
     private List<RestartListener> restartListeners = new ArrayList<>();
 
@@ -59,15 +59,15 @@ public class Game {
 
     public void reveal(Position position) {
         if (board.reveal(position)) {
-            fireFieldChanged();
             state = GameState.GOING;
+            fireBoardChanged();
         }
         tryToEnd();
     }
 
     public void toggleFlag(Position position) {
         if (board.putFlag(position) || board.removeFlag(position)) {
-            fireFieldChanged();
+            fireBoardChanged();
         }
     }
 
@@ -75,22 +75,23 @@ public class Game {
         this.difficulty = difficulty;
         board = new Board(difficulty);
         state = GameState.READY;
+        fireBoardChanged();
         fireRestarted();
-        fireFieldChanged();
     }
 
     public void restart() {
         board = new Board(difficulty);
         state = GameState.READY;
+        fireBoardChanged();
         fireRestarted();
     }
 
     public void addBoardListener(BoardListener listener) {
-        fieldListeners.add(listener);
+        boardListeners.add(listener);
     }
 
     public void removeBoardListener(BoardListener listener) {
-        fieldListeners.remove(listener);
+        boardListeners.remove(listener);
     }
 
     public void addEndListener(EndListener listener) {
@@ -117,12 +118,12 @@ public class Game {
             state = GameState.LOSS;
             board.revealNotFlaggedMines();
         } else return;
-        fireFieldChanged();
+        fireBoardChanged();
         fireEnded();
     }
 
-    private void fireFieldChanged() {
-        for (var listener : fieldListeners) {
+    private void fireBoardChanged() {
+        for (var listener : boardListeners) {
             listener.boardChanged();
         }
     }
