@@ -11,7 +11,7 @@ public class GameStatePanel extends JPanel {
 
     public GameStatePanel(GameController controller) {
         this.controller = controller;
-        label = new JLabel("Stats Placeholder");
+        label = new JLabel(controller.getGame().getState().toString());
         add(label);
         setBorder(BorderFactory.createLoweredBevelBorder());
 

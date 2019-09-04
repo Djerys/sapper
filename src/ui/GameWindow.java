@@ -5,9 +5,15 @@ import controller.GameController;
 import javax.swing.*;
 import java.awt.*;
 
-public class GameFrame extends JFrame implements UI {
+public class GameWindow implements GameUI {
+    private JFrame frame = new JFrame();
     private BoardPanel boardPanel;
     private GameStatePanel gameStatePanel;
+
+    @Override
+    public JFrame getFrame() {
+        return frame;
+    }
 
     @Override
     public JPanel getBoardPanel() {
@@ -27,11 +33,11 @@ public class GameFrame extends JFrame implements UI {
     @Override
     public void initialize(GameController controller) {
         JMenuBar menuBar = new GameMenuBar(controller);
-        setJMenuBar(menuBar);
+        frame.setJMenuBar(menuBar);
 
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
-        add(mainPanel);
+        frame.add(mainPanel);
 
         gameStatePanel = new GameStatePanel(controller);
         mainPanel.add(gameStatePanel, BorderLayout.NORTH);
@@ -40,10 +46,10 @@ public class GameFrame extends JFrame implements UI {
         mainPanel.add(boardPanel, BorderLayout.CENTER);
 
 
-        setResizable(true);
-        pack();
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setVisible(true);
-        setLocationRelativeTo(null);
+        frame.setResizable(true);
+        frame.pack();
+        frame.setDefaultCloseOperation(frame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+        frame.setLocationRelativeTo(null);
     }
 }

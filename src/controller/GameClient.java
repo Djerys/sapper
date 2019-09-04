@@ -3,24 +3,25 @@ package controller;
 import game_logic.Game;
 import game_logic.Difficulty;
 import game_logic.Position;
-import ui.GameFrame;
-import ui.UI;
+import ui.GameWindow;
+import ui.GameUI;
 
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class GameClient extends MouseAdapter implements GameController {
     private final Game game;
-    private final UI ui;
+    private final GameUI ui;
 
     public static void main(String[] args) {
         var game = new Game(Difficulty.BEGINNER);
-        UI ui = new GameFrame();
+        GameUI ui = new GameWindow();
         GameController controller = new GameClient(game, ui);
         controller.start();
     }
 
-    GameClient(Game game, UI ui) {
+    GameClient(Game game, GameUI ui) {
         this.game = game;
         this.ui = ui;
         this.ui.initialize(this);
@@ -36,8 +37,11 @@ public class GameClient extends MouseAdapter implements GameController {
         ui.getBoardPanel().addMouseListener(this);
 
         game.addBoardListener(ui.getBoardPanel()::repaint);
+        game.addBoardListener(ui.getBoardPanel()::repaint);
         game.addEndListener(ui.getBoardPanel()::repaint);
         game.addRestartListener(ui.getBoardPanel()::repaint);
+        var size = ui.getBoardPanel().getSize();
+        game.addRestartListener(() -> ui.getFrame().setSize(ui.getBoardPanel().getSize()));
     }
 
     @Override
