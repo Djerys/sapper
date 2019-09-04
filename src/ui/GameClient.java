@@ -10,6 +10,7 @@ public class GameClient implements GameUI {
     private JFrame frame = new JFrame();
     private BoardPanel boardPanel;
     private GameStatePanel gameStatePanel;
+    private FlagsCountPanel flagsCountPanel;
 
     public GameClient(Game game) {
         this.game = game;
@@ -24,8 +25,11 @@ public class GameClient implements GameUI {
         mainPanel.setLayout(new BorderLayout());
         frame.add(mainPanel);
 
+        flagsCountPanel = new FlagsCountPanel(game);
+        mainPanel.add(flagsCountPanel, BorderLayout.NORTH);
+
         gameStatePanel = new GameStatePanel(game);
-        mainPanel.add(gameStatePanel, BorderLayout.NORTH);
+        mainPanel.add(gameStatePanel, BorderLayout.SOUTH);
 
         boardPanel = new BoardPanel(game);
         mainPanel.add(boardPanel, BorderLayout.CENTER);
@@ -43,6 +47,7 @@ public class GameClient implements GameUI {
     private void addGameListeners() {
         game.addBoardListener(boardPanel::repaint);
         game.addBoardListener(gameStatePanel::update);
+        game.addBoardListener(flagsCountPanel::update);
         game.addRestartListener(() -> {
             boardPanel.update();
             frame.pack();
