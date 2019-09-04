@@ -6,11 +6,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Game {
-    private Board field;
+    private Board board;
     private Difficulty difficulty;
     private GameState state = GameState.READY;
-    private List<FieldListener> fieldListeners = new ArrayList<>();
+    private List<BoardListener> fieldListeners = new ArrayList<>();
     private List<EndListener> endListeners = new ArrayList<>();
+    private List<RestartListener> restartListeners = new ArrayList<>();
 
     public Game() {
         restart(Difficulty.INTERMEDIATE);
@@ -33,7 +34,7 @@ public class Game {
     }
 
     public int getUnusedFlagsCount() {
-        return field.getUnusedFlagsCount();
+        return board.getUnusedFlagsCount();
     }
 
     public GameState getState() {
@@ -41,23 +42,23 @@ public class Game {
     }
 
     public boolean isRevealed(Position position) {
-        return field.isRevealed(position);
+        return board.isRevealed(position);
     }
 
     public boolean hasMine(Position position) {
-        return field.hasMine(position);
+        return board.hasMine(position);
     }
 
     public boolean hasFlag(Position position) {
-        return field.hasFlag(position);
+        return board.hasFlag(position);
     }
 
     public int nearMinesCount(Position position) {
-        return field.nearMinesCount(position);
+        return board.nearMinesCount(position);
     }
 
     public void reveal(Position position) {
-        if (field.reveal(position)) {
+        if (board.reveal(position)) {
             fireFieldChanged();
             state = GameState.GOING;
         }
@@ -65,22 +66,30 @@ public class Game {
     }
 
     public void toggleFlag(Position position) {
-        if (field.putFlag(position) || field.removeFlag(position)) {
+        if (board.putFlag(position) || board.removeFlag(position)) {
             fireFieldChanged();
         }
     }
 
     public void restart(Difficulty difficulty) {
         this.difficulty = difficulty;
-        field = new Board(difficulty);
+        board = new Board(difficulty);
         state = GameState.READY;
+        fireRestarted();
+        fireFieldChanged();
     }
 
-    public void addFieldListener(FieldListener listener) {
+    public void restart() {
+        board = new Board(difficulty);
+        state = GameState.READY;
+        fireRestarted();
+    }
+
+    public void addBoardListener(BoardListener listener) {
         fieldListeners.add(listener);
     }
 
-    public void removeFieldListener(FieldListener listener) {
+    public void removeBoardListener(BoardListener listener) {
         fieldListeners.remove(listener);
     }
 
@@ -92,13 +101,21 @@ public class Game {
         endListeners.remove(listener);
     }
 
+    public void addRestartListener(RestartListener listener) {
+        restartListeners.add(listener);
+    }
+
+    public void removeRestartListener(RestartListener listener) {
+        restartListeners.remove(listener);
+    }
+
     private void tryToEnd() {
-        if (field.isClear()) {
+        if (board.isClear()) {
             state = GameState.WIN;
-            field.revealAllCells();
-        } else if (field.isBlown()) {
+            board.revealAllCells();
+        } else if (board.isBlown()) {
             state = GameState.LOSS;
-            field.revealNotFlaggedMines();
+            board.revealNotFlaggedMines();
         } else return;
         fireFieldChanged();
         fireEnded();
@@ -106,13 +123,19 @@ public class Game {
 
     private void fireFieldChanged() {
         for (var listener : fieldListeners) {
-            listener.fieldChanged();
+            listener.boardChanged();
         }
     }
 
     private void fireEnded() {
         for (var listener : endListeners) {
             listener.ended();
+        }
+    }
+
+    private void fireRestarted() {
+        for (var listener : restartListeners) {
+            listener.restarted();
         }
     }
 }

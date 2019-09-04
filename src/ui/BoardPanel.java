@@ -1,34 +1,29 @@
-package ui.gui;
+package ui;
 
 import game_logic.Game;
 import game_logic.Position;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
-public class FieldPanel extends JPanel {
+public class BoardPanel extends JPanel {
     private final Game game;
     private final Image countImages[] = new Image[9];
     private final Image closedImage = new ImageIcon("img/closed_cell.png").getImage();
     private final Image mineImage = new ImageIcon("img/mine_cell.png").getImage();
     private final Image flagImage = new ImageIcon("img/flag_cell.png").getImage();
+    private final int cellSize = 30;
 
-    private static final int CELL_SIZE = 30;
-
-    public FieldPanel(Game game) {
+    public BoardPanel(Game game) {
         this.game = game;
-        initImages();
-        setPreferredSize(new Dimension(game.getWidthSize() * CELL_SIZE,
-                game.getHeightSize() * CELL_SIZE));
+        initializeCountImages();
+        var width = game.getWidthSize() * cellSize;
+        var height = game.getHeightSize() * cellSize;
+        setPreferredSize(new Dimension(width, height));
     }
 
-    private void initImages() {
-        for (int i = 0; i < 9; i++) {
-            var path = "img/" + i + "_cell.png";
-            countImages[i] = new ImageIcon(path).getImage();
-        }
+    public int getCellSize() {
+        return cellSize;
     }
 
     @Override
@@ -46,8 +41,15 @@ public class FieldPanel extends JPanel {
                 } else {
                     imageToDraw = countImages[game.nearMinesCount(position)];
                 }
-                g.drawImage(imageToDraw, i * CELL_SIZE, j * CELL_SIZE, this);
+                g.drawImage(imageToDraw, i * cellSize, j * cellSize, this);
             }
+        }
+    }
+
+    private void initializeCountImages() {
+        for (int i = 0; i < 9; i++) {
+            var path = "img/" + i + "_cell.png";
+            countImages[i] = new ImageIcon(path).getImage();
         }
     }
 }

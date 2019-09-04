@@ -3,13 +3,11 @@ package controller;
 import game_logic.Game;
 import game_logic.Difficulty;
 import game_logic.Position;
-import ui.gui.GameFrame;
+import ui.GameFrame;
 import ui.UI;
-import ui.gui.UIConstants;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.EventObject;
 
 public class GameClient extends MouseAdapter implements GameController {
     private final Game game;
@@ -19,19 +17,33 @@ public class GameClient extends MouseAdapter implements GameController {
         var game = new Game(Difficulty.BEGINNER);
         UI ui = new GameFrame();
         GameController controller = new GameClient(game, ui);
+        controller.start();
     }
 
     GameClient(Game game, UI ui) {
         this.game = game;
         this.ui = ui;
-        this.ui.setController(this);
-        // TODO: addListeners()
+        this.ui.initialize(this);
+    }
+
+    @Override
+    public Game getGame() {
+        return game;
+    }
+
+    @Override
+    public void start() {
+        ui.getBoardPanel().addMouseListener(this);
+
+        game.addBoardListener(ui.getBoardPanel()::repaint);
+        game.addEndListener(ui.getBoardPanel()::repaint);
+        game.addRestartListener(ui.getBoardPanel()::repaint);
     }
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int width = e.getX() / UIConstants.CELL_SIZE;
-        int height = e.getY() / UIConstants.CELL_SIZE;
+        int width = e.getX() / ui.getCellSize();
+        int height = e.getY() / ui.getCellSize();
         var position = new Position(width, height);
 
         if (e.getButton() == MouseEvent.BUTTON1) {
@@ -39,10 +51,5 @@ public class GameClient extends MouseAdapter implements GameController {
         } else if (e.getButton() == MouseEvent.BUTTON3) {
             game.toggleFlag(position);
         }
-    }
-
-    @Override
-    public Game getGame() {
-        return game;
     }
 }

@@ -3,7 +3,7 @@ package game_logic;
 public enum Difficulty {
     BEGINNER(9, 9, 10), 
     INTERMEDIATE(16, 16, 40),
-    PROFESSIONAL(30, 16, 99);
+    HARD(30, 16, 99);
 
     private final int heightSize;
     private final int widthSize;

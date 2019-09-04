@@ -1,0 +1,20 @@
+package ui;
+
+import controller.GameController;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class GameStatePanel extends JPanel {
+    private final GameController controller;
+    private final JLabel label;
+
+    public GameStatePanel(GameController controller) {
+        this.controller = controller;
+        label = new JLabel("Stats Placeholder");
+        add(label);
+        setBorder(BorderFactory.createLoweredBevelBorder());
+
+        setLayout(new FlowLayout());
+    }
+}
